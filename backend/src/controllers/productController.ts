@@ -21,12 +21,12 @@ export const getProductById = async (req: Request, res: Response, next: NextFunc
         const id = Number(req.params.id);
         if (isNaN(id)) {
             res.status(400).json({ message: 'Invalid product ID' });
-            return
+            return;
         }
         const product = await productModel.getProductById(id);
         if (!product) {
             res.status(404).json({ message: 'Product not found' });
-            return
+            return;
         }
         res.json(product);
     } catch (err) {

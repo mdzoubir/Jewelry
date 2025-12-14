@@ -7,6 +7,9 @@ export interface User {
     name: string;
     email: string;
     password_hash?: string;
+    phone?: string;
+    marketing_consent?: boolean;
+    profiling_consent?: boolean;
     oauth_provider?: string;
     oauth_id?: string;
     role?: UserRole;
@@ -15,12 +18,12 @@ export interface User {
 }
 
 export const getAllUsers = async (): Promise<User[]> => {
-    const [rows] = await pool.query<RowDataPacket[]>('SELECT id, name, email, role, created_at, updated_at FROM users');
+    const [rows] = await pool.query<RowDataPacket[]>('SELECT id, name, email, phone, role, created_at, updated_at FROM users');
     return rows as User[];
 };
 
 export const getUserById = async (id: number): Promise<User | null> => {
-    const [rows] = await pool.query<RowDataPacket[]>('SELECT id, name, email, role, created_at, updated_at FROM users WHERE id = ?', [id]);
+    const [rows] = await pool.query<RowDataPacket[]>('SELECT id, name, email, phone, role, created_at, updated_at FROM users WHERE id = ?', [id]);
     return (rows[0] as User) || null;
 };
 
@@ -30,10 +33,10 @@ export const findUserByEmail = async (email: string): Promise<User | null> => {
 };
 
 export const createUser = async (user: User): Promise<User> => {
-    const { name, email, password_hash, oauth_provider, oauth_id, role } = user;
+    const { name, email, password_hash, phone, marketing_consent, profiling_consent, oauth_provider, oauth_id, role } = user;
     const [result] = await pool.query<ResultSetHeader>(
-        'INSERT INTO users (name, email, password_hash, oauth_provider, oauth_id, role) VALUES (?, ?, ?, ?, ?, ?)',
-        [name, email, password_hash, oauth_provider, oauth_id, role || UserRole.CUSTOMER]
+        'INSERT INTO users (name, email, password_hash, phone, marketing_consent, profiling_consent, oauth_provider, oauth_id, role) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)',
+        [name, email, password_hash, phone, marketing_consent || false, profiling_consent || false, oauth_provider, oauth_id, role || UserRole.CUSTOMER]
     );
     return { id: result.insertId, ...user, role: role || UserRole.CUSTOMER };
 };

@@ -1,20 +1,26 @@
 export interface Product {
     id: number;
-    img: string; // URL path to image
+    category_id?: number | null;
     name: string;
+    slug: string;
+    description?: string | null;
     price: number;
+    image_url?: string | null;
+    created_at?: string;
+    // UI specific (optional/mapped)
+    category?: string;
+    images?: string[];
+    // Legacy UI fields (mapped)
+    img?: string;
     isWishlisted?: boolean;
     isBestSeller?: boolean;
     isSoldOut?: boolean;
-    category?: string;
-    description?: string;
     weight?: string;
     carat?: string;
     gender?: string;
     sizes?: string[];
     materials?: string[];
     gemColors?: string[];
-    images?: string[];
 }
 
 export interface CartItem extends Product {

@@ -7,6 +7,10 @@ export interface Order {
     user_id: number;
     total: number;
     status: 'pending' | 'paid' | 'shipped' | 'completed' | 'cancelled';
+    shipping_address?: string;
+    shipping_city?: string;
+    shipping_zip?: string;
+    shipping_country?: string;
     created_at: Date;
     items?: OrderItem[];
 }
@@ -20,7 +24,7 @@ export interface OrderItem {
 }
 
 // Transactional Order Creation
-export const createOrderFromCart = async (userId: number): Promise<Order> => {
+export const createOrderFromCart = async (userId: number, addressData?: { address: string, city: string, zip: string, country: string }): Promise<Order> => {
     const connection: PoolConnection = await pool.getConnection();
     try {
         await connection.beginTransaction();
@@ -48,8 +52,8 @@ export const createOrderFromCart = async (userId: number): Promise<Order> => {
         }
 
         const [orderRes] = await connection.query<ResultSetHeader>(
-            'INSERT INTO orders (user_id, total, status) VALUES (?, ?, ?)',
-            [userId, total, 'pending']
+            'INSERT INTO orders (user_id, total, status, shipping_address, shipping_city, shipping_zip, shipping_country) VALUES (?, ?, ?, ?, ?, ?, ?)',
+            [userId, total, 'pending', addressData?.address, addressData?.city, addressData?.zip, addressData?.country || 'Italia']
         );
         const orderId = orderRes.insertId;
 

@@ -11,7 +11,15 @@ const getUserId = (req: Request): number => {
 export const createOrder = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const userId = getUserId(req);
-        const order = await orderModel.createOrderFromCart(userId);
+        const { address, city, zip, country } = req.body;
+
+        // Basic address validation for shipping
+        if (!address || !city || !zip) {
+            res.status(400).json({ message: 'Shipping address, city and zip code are required' });
+            return; // Stop execution
+        }
+
+        const order = await orderModel.createOrderFromCart(userId, { address, city, zip, country });
         res.status(201).json(order);
     } catch (err: any) {
         if (err.message.includes('stock') || err.message.includes('Cart is empty')) {

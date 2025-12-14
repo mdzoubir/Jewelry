@@ -16,6 +16,10 @@ const PORT = process.env.PORT ? Number(process.env.PORT) : 3000;
 
 app.use(cors());
 app.use(express.json());
+// Serve static files from the "public" directory
+// This allows accessing images at http://localhost:3000/uploads/filename.jpg
+import path from 'path';
+app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 
 // Routes
 app.use('/api/users', userRoutes);
