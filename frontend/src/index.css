@@ -1,0 +1,188 @@
+/* Satoshi */
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/src/assets/fonts/Satoshi-Light.woff2') format('woff2');
+  font-weight: 300;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/src/assets/fonts/Satoshi-Regular.woff2') format('woff2');
+  font-weight: 400;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/src/assets/fonts/Satoshi-Medium.woff2') format('woff2');
+  font-weight: 500;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/src/assets/fonts/Satoshi-Bold.woff2') format('woff2');
+  font-weight: 700;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Satoshi';
+  src: url('/src/assets/fonts/Satoshi-Black.woff2') format('woff2');
+  font-weight: 900;
+  font-display: swap;
+  font-style: normal;
+}
+
+/* Space Grotesk */
+@font-face {
+  font-family: 'Space Grotesk';
+  src: url('/src/assets/fonts/SpaceGrotesk-Light.ttf') format('truetype');
+  font-weight: 300;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Space Grotesk';
+  src: url('/src/assets/fonts/SpaceGrotesk-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Space Grotesk';
+  src: url('/src/assets/fonts/SpaceGrotesk-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Space Grotesk';
+  src: url('/src/assets/fonts/SpaceGrotesk-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-display: swap;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: 'Space Grotesk';
+  src: url('/src/assets/fonts/SpaceGrotesk-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-display: swap;
+  font-style: normal;
+}
+
+@import "tailwindcss";
+
+@theme {
+
+  --color-gold-700: #7E6F55;
+  --color-gold-600: #A89472;
+  --color-gold-500: #D2B98E;
+  --color-gold-400: #DBC7A5;
+  --color-gold-300: #E4D5BB;
+  --color-gold-200: #EDE3D2;
+  --color-gold-100: #F6F1E8;
+
+
+  --color-dark-gray-800: #1D1C1A;
+  --color-dark-gray-700: #57534F;
+  --color-dark-gray-600: #746F6A;
+  --color-dark-gray-500: #918B84;
+  --color-dark-gray-400: #A7A29D;
+
+
+  --color-light-gray-700: #79766F;
+  --color-light-gray-600: #A29E94;
+  --color-light-gray-500: #CAC5B9;
+  --color-light-gray-400: #D6D1C7;
+  --color-light-gray-300: #DFDCD5;
+
+
+  --color-white-200: #FDFCFB;
+  --color-white-100: #FEFEFD;
+  --color-white-50: #FFFFFF;
+
+
+  /* Semantic Colors */
+  --color-gold: var(--color-gold-500);
+  --color-gold-dark: #A89160;
+  --color-gold-light: #FDFBF7;
+
+  --color-text-primary: #6D635B;
+  --color-text-secondary: #8A8A8A;
+
+  --color-border-light: #E5E0D5;
+
+  --color-bg-base: #FEFEFD;
+  --color-bg-subtle: #F9F8F6;
+
+  /* Legacy but mapped to semantic where possible */
+  --color-gold-text: var(--color-gold-dark);
+
+  /* --- Typography --- */
+  --font-sans: "Satoshi", sans-serif;
+  --font-serif: "Satoshi", sans-serif;
+  --font-title: "Space Grotesk", sans-serif;
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--color-dark-gray-800);
+  background-color: var(--color-white-200);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-sans);
+  /* Use Satoshi for headings */
+}
+
+button {
+  cursor: pointer;
+}
+
+
+.font-title {
+  font-family: var(--font-title);
+}
+
+.diamond-separator {
+  position: relative;
+  width: 100%;
+  height: 1px;
+  background-color: var(--color-gold-500);
+  margin: 2rem 0;
+}
+
+.diamond-icon {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(45deg);
+  width: 12px;
+  height: 12px;
+  background-color: var(--color-gold-500);
+}
+
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
