@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import Button from '../components/ui/Button';
+import Button from '../../components/ui/Button';
 
 const RegisterPage: React.FC = () => {
     const [showPassword, setShowPassword] = useState(false);

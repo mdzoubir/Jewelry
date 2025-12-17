@@ -1,10 +1,10 @@
 import React from 'react';
-import { products } from '../data/mockData';
-import ProductCard from '../components/ui/ProductCard';
-import handIcon from '../assets/images/ui/hand-2.png';
-import { useShop } from '../context/ShopContext';
+import { products } from '../../data/mockData';
+import ProductCard from '../../components/ui/ProductCard';
+import handIcon from '../../assets/images/ui/hand-2.png';
+import { useShop } from '../../context/ShopContext';
 import { Link } from 'react-router-dom';
-import Button from '../components/ui/Button';
+import Button from '../../components/ui/Button';
 
 const WishlistPage: React.FC = () => {
     const { wishlist } = useShop();

@@ -1,14 +1,14 @@
 import React from 'react';
-import { useShop } from '../context/ShopContext';
-import CartSteps from '../components/cart/CartSteps';
-import CartItem from '../components/cart/CartItem';
-import CartSummary from '../components/cart/CartSummary';
-import SuggestedProducts from '../components/products/SuggestedProducts';
-import CartWishlistSection from '../components/cart/CartWishlistSection';
-import CartNewProductsSection from '../components/cart/CartNewProductsSection';
+import { useShop } from '../../context/ShopContext';
+import CartSteps from '../../components/cart/CartSteps';
+import CartItem from '../../components/cart/CartItem';
+import CartSummary from '../../components/cart/CartSummary';
+import SuggestedProducts from '../../components/products/SuggestedProducts';
+import CartWishlistSection from '../../components/cart/CartWishlistSection';
+import CartNewProductsSection from '../../components/cart/CartNewProductsSection';
 import { ShoppingBag } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import usePageTitle from '../hooks/usePageTitle';
+import usePageTitle from '../../hooks/usePageTitle';
 
 import { useNavigate } from 'react-router-dom';
 

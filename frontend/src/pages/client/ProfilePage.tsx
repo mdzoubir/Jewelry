@@ -1,6 +1,6 @@
 import { Outlet } from 'react-router-dom';
-import usePageTitle from '../hooks/usePageTitle';
-import ProfileSidebar from '../components/profile/ProfileSidebar';
+import usePageTitle from '../../hooks/usePageTitle';
+import ProfileSidebar from '../../components/profile/ProfileSidebar';
 
 const ProfilePage: React.FC = () => {
     usePageTitle("Area Personale | Mya Oro");

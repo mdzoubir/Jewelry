@@ -1,11 +1,11 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
-import { products } from '../data/mockData';
-import ProductGallery from '../components/product-details/ProductGallery';
-import ProductInfo from '../components/product-details/ProductInfo';
-import Reviews from '../components/home/Reviews';
-import SuggestedProducts from '../components/products/SuggestedProducts';
-import WishlistSection from '../components/products/WishlistSection';
+import { products } from '../../data/mockData';
+import ProductGallery from '../../components/product-details/ProductGallery';
+import ProductInfo from '../../components/product-details/ProductInfo';
+import Reviews from '../../components/home/Reviews';
+import SuggestedProducts from '../../components/products/SuggestedProducts';
+import WishlistSection from '../../components/products/WishlistSection';
 
 
 

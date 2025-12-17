@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
-import usePageTitle from '../hooks/usePageTitle';
-import heroBg from '../assets/images/about/about_mission.jpg';
-import ProductGrid from '../components/products/ProductGrid';
-import CartNewProductsSection from '../components/cart/CartNewProductsSection';
-import QuoteSection from '../components/products/QuoteSection';
-import PageHero from '../components/ui/PageHero';
-import FilterBar from '../components/products/FilterBar';
-import Pagination from '../components/ui/Pagination';
-import { products } from '../data/mockData';
+import usePageTitle from '../../hooks/usePageTitle';
+import heroBg from '../../assets/images/about/about_mission.jpg';
+import ProductGrid from '../../components/products/ProductGrid';
+import CartNewProductsSection from '../../components/cart/CartNewProductsSection';
+import QuoteSection from '../../components/products/QuoteSection';
+import PageHero from '../../components/ui/PageHero';
+import FilterBar from '../../components/products/FilterBar';
+import Pagination from '../../components/ui/Pagination';
+import { products } from '../../data/mockData';
 
 const filterCategories = [
     "Anniversario", "Fidanzamento", "Battesimo", "Cresima", "Comunione", "Laurea", "Natale", "San Valentino"

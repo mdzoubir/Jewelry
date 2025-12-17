@@ -1,10 +1,10 @@
 import React from 'react';
 import { CheckCircle, ShoppingBag } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import CartSteps from '../components/cart/CartSteps';
-import CartSummary from '../components/cart/CartSummary';
-import Button from '../components/ui/Button';
-import usePageTitle from '../hooks/usePageTitle';
+import CartSteps from '../../components/cart/CartSteps';
+import CartSummary from '../../components/cart/CartSummary';
+import Button from '../../components/ui/Button';
+import usePageTitle from '../../hooks/usePageTitle';
 // import { useShop } from '../context/ShopContext';
 
 const CheckoutSuccessPage: React.FC = () => {

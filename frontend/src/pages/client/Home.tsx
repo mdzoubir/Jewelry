@@ -1,10 +1,10 @@
 import React from 'react';
-import usePageTitle from '../hooks/usePageTitle';
-import Hero from '../components/home/Hero';
-import BestSellers from '../components/home/BestSellers';
-import Solutions from '../components/home/Solutions';
-import Features from '../components/home/Features';
-import Reviews from '../components/home/Reviews';
+import usePageTitle from '../../hooks/usePageTitle';
+import Hero from '../../components/home/Hero';
+import BestSellers from '../../components/home/BestSellers';
+import Solutions from '../../components/home/Solutions';
+import Features from '../../components/home/Features';
+import Reviews from '../../components/home/Reviews';
 
 const Home: React.FC = () => {
     usePageTitle("Mya Oro | Gioielleria Esclusiva");

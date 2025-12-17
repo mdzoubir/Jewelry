@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import { errorHandler } from './middleware/errorMiddleware';
 import pool from './db';
+import { setupDatabase } from './setup-db';
 
 import userRoutes from './routes/userRoutes';
 import categoryRoutes from './routes/categoryRoutes';
@@ -33,16 +34,29 @@ app.use(errorHandler);
 
 const startServer = async () => {
   try {
+    // Try to connect to the database
     await pool.getConnection();
     console.log('Database connected successfully');
-
-    app.listen(PORT, () => {
-      console.log(`Backend listening on http://localhost:${PORT}`);
-    });
-  } catch (err) {
-    console.error('Failed to connect to database:', err);
-    process.exit(1);
+  } catch (err: any) {
+    // If database doesn't exist, set it up
+    if (err.code === 'ER_BAD_DB_ERROR') {
+      console.log('Database not found. Running setup...');
+      try {
+        await setupDatabase();
+        console.log('Database setup completed. Reconnecting...');
+      } catch (setupErr) {
+        console.error('Failed to setup database:', setupErr);
+        process.exit(1);
+      }
+    } else {
+      console.error('Failed to connect to database:', err);
+      process.exit(1);
+    }
   }
+
+  app.listen(PORT, () => {
+    console.log(`Backend listening on http://localhost:${PORT}`);
+  });
 };
 
 startServer();

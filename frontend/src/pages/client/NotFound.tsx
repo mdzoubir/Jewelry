@@ -1,5 +1,5 @@
 import React from 'react';
-import usePageTitle from '../hooks/usePageTitle';
+import usePageTitle from '../../hooks/usePageTitle';
 import { Link } from 'react-router-dom';
 import { Sparkles } from 'lucide-react';
 

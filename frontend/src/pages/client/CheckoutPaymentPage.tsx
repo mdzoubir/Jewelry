@@ -2,15 +2,15 @@
 import React, { useState } from 'react';
 import { CreditCard, Lock, ChevronLeft } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import CartSteps from '../components/cart/CartSteps';
-import CartSummary from '../components/cart/CartSummary';
+import CartSteps from '../../components/cart/CartSteps';
+import CartSummary from '../../components/cart/CartSummary';
 import {
     PurchaseConfirmationModal,
     CheckoutErrorModal,
     CancelPurchaseModal,
     PurchaseSuccessModal
-} from '../components/checkout/CheckoutModals';
-import usePageTitle from '../hooks/usePageTitle';
+} from '../../components/checkout/CheckoutModals';
+import usePageTitle from '../../hooks/usePageTitle';
 
 const CheckoutPaymentPage: React.FC = () => {
     usePageTitle("Mya Oro | Pagamento");

@@ -1,9 +1,9 @@
 import React from 'react';
 import { ChevronDown } from 'lucide-react';
-import usePageTitle from '../hooks/usePageTitle';
-import heroImage from '../assets/images/hero/mya-personal-hero.jpg';
-import ConfigurationSection from '../components/personal/ConfigurationSection';
-import PersonalizationSection from '../components/personal/PersonalizationSection';
+import usePageTitle from '../../hooks/usePageTitle';
+import heroImage from '../../assets/images/hero/mya-personal-hero.jpg';
+import ConfigurationSection from '../../components/personal/ConfigurationSection';
+import PersonalizationSection from '../../components/personal/PersonalizationSection';
 
 const MyaPersonal: React.FC = () => {
     usePageTitle("Mya Oro | Mya Personal");

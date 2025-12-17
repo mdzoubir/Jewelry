@@ -5,7 +5,7 @@ import path from 'path';
 
 dotenv.config();
 
-async function setupDatabase() {
+export async function setupDatabase() {
     const connection = await mysql.createConnection({
         host: process.env.DB_HOST,
         user: process.env.DB_USER,
@@ -30,9 +30,13 @@ async function setupDatabase() {
         console.log('Schema applied successfully.');
     } catch (error) {
         console.error('Error setting up database:', error);
+        throw error;
     } finally {
         await connection.end();
     }
 }
 
-setupDatabase();
+// Run setup if executed directly
+if (require.main === module) {
+    setupDatabase();
+}

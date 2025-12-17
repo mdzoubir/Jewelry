@@ -5,17 +5,21 @@ Welcome to the **Mya Oro** frontend project! This guide will help you understand
 ## 🚀 Getting Started
 
 ### Prerequisites
+
 - Node.js installed.
 
 ### Installation
+
 ```bash
 npm install
 ```
 
 ### Running the Development Server
+
 ```bash
 npm run dev
 ```
+
 The app will open at `http://localhost:5173`.
 
 ---
@@ -49,8 +53,10 @@ src/
 ## 🛠️ How To...
 
 ### 1. Add New Products
+
 Go to `src/data/mockData.ts`.
 Add a new object to the `products` array:
+
 ```typescript
 {
     id: 25,
@@ -60,31 +66,38 @@ Add a new object to the `products` array:
     category: "Fidanzamento"
 }
 ```
-*Note: Make sure to import the image first at the top of the file!*
+
+_Note: Make sure to import the image first at the top of the file!_
 
 ### 2. Add a New Page
+
 1. Create a new file in `src/pages/NewPage.tsx`.
 2. Open `src/App.tsx`.
 3. Import the page (lazy load recommended) and add a `<Route />`:
    ```tsx
-   const NewPage = lazy(() => import('./pages/NewPage'));
+   const NewPage = lazy(() => import("./pages/NewPage"));
    // ... inside Routes
-   <Route path="/new-page" element={<NewPage />} />
+   <Route path="/new-page" element={<NewPage />} />;
    ```
 
 ### 3. Change Images
+
 Images are stored in `src/assets/images/`.
+
 - **Products**: `src/assets/images/products/`
 - **Hero/Banners**: `src/assets/images/hero/`
 - **UI/Icons**: `src/assets/images/ui/`
 
 When adding an image, import it in the component where you need it:
+
 ```tsx
-import myImage from '../../assets/images/products/my-image.jpg';
+import myImage from "../../assets/images/products/my-image.jpg";
 ```
 
 ### 4. Global Styles & Colors
+
 Tailwind is used for most styling.
+
 - **Colors**: Defined in `tailwind.config.js` (e.g., `text-gold-500`, `bg-dark-gray-800`).
 - **Fonts**: Configured globally. Use `font-serif` for headers and `font-sans` for body text.
 
@@ -92,11 +105,12 @@ Tailwind is used for most styling.
 
 ## 💡 Key Features Implemented
 
-*   **Routing**: `react-router-dom` handles navigation (`/products`, `/cart`, etc.).
-*   **Cart System**: `ShopContext` manages the cart state globally. You can use accessing `useShop()` in any component.
-*   **Scroll To Top**: Already implemented globally in `MainLayout`.
-*   **Lazy Loading**: Pages are lazy-loaded for performance.
+- **Routing**: `react-router-dom` handles navigation (`/products`, `/cart`, etc.).
+- **Cart System**: `ShopContext` manages the cart state globally. You can use accessing `useShop()` in any component.
+- **Scroll To Top**: Already implemented globally in `MainLayout`.
+- **Lazy Loading**: Pages are lazy-loaded for performance.
 
 ## 🤝 Contribution Tips
-*   Always create reusable components in `src/components/ui/` if used in multiple places.
-*   Keep `App.tsx` clean by putting page logic inside the `src/pages/` files.
+
+- Always create reusable components in `src/components/ui/` if used in multiple places.
+- Keep `App.tsx` clean by putting page logic inside the `src/pages/` files.

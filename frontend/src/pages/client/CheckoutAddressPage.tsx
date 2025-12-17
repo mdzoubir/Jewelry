@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { Truck, Edit2, Trash2 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import CartSteps from '../components/cart/CartSteps';
-import CartSummary from '../components/cart/CartSummary';
-import { useShop } from '../context/ShopContext';
-import AddressModal from '../components/profile/AddressModal';
-import usePageTitle from '../hooks/usePageTitle';
+import CartSteps from '../../components/cart/CartSteps';
+import CartSummary from '../../components/cart/CartSummary';
+import { useShop } from '../../context/ShopContext';
+import AddressModal from '../../components/profile/AddressModal';
+import usePageTitle from '../../hooks/usePageTitle';
 
 // Mock Addresses (Ideally this comes from a user context or API)
 const initialAddresses = [

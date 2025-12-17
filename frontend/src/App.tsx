@@ -1,42 +1,59 @@
 import { Suspense, lazy } from 'react';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Outlet } from 'react-router-dom';
 import MainLayout from './components/layout/MainLayout';
 import ScrollToTop from './components/layout/ScrollToTop';
 import LoadingSpinner from './components/ui/LoadingSpinner';
 import { ShopProvider } from './context/ShopContext';
+import AdminLayout from './components/layout/AdminLayout';
+import AdminSettings from './pages/admin/AdminSettings';
+import AdminPromotions from './pages/admin/AdminPromotions';
+import AdminPayments from './pages/admin/AdminPayments';
+import AdminCategories from './pages/admin/AdminCategories';
+import AdminAdministration from './pages/admin/AdminAdministration';
+import AdminClients from './pages/admin/AdminClients';
+import AdminProducts from './pages/admin/AdminProducts';
+import AdminOrders from './pages/admin/AdminOrders';
 
 // Lazy load pages
-const Home = lazy(() => import('./pages/Home'));
-const About = lazy(() => import('./pages/About'));
-const MyaPersonal = lazy(() => import('./pages/MyaPersonal'));
-const ProductsPage = lazy(() => import('./pages/ProductsPage'));
-const ProductDetailsPage = lazy(() => import('./pages/ProductDetailsPage'));
-const Cart = lazy(() => import('./pages/Cart'));
-const CheckoutAddressPage = lazy(() => import('./pages/CheckoutAddressPage'));
-const CheckoutPaymentPage = lazy(() => import('./pages/CheckoutPaymentPage'));
-const CheckoutSuccessPage = lazy(() => import('./pages/CheckoutSuccessPage'));
-const ProfilePage = lazy(() => import('./pages/ProfilePage'));
-const NotFound = lazy(() => import('./pages/NotFound'));
+const Home = lazy(() => import('./pages/client/Home'));
+const About = lazy(() => import('./pages/client/About'));
+const MyaPersonal = lazy(() => import('./pages/client/MyaPersonal'));
+const ProductsPage = lazy(() => import('./pages/client/ProductsPage'));
+const ProductDetailsPage = lazy(() => import('./pages/client/ProductDetailsPage'));
+const Cart = lazy(() => import('./pages/client/Cart'));
+const CheckoutAddressPage = lazy(() => import('./pages/client/CheckoutAddressPage'));
+const CheckoutPaymentPage = lazy(() => import('./pages/client/CheckoutPaymentPage'));
+const CheckoutSuccessPage = lazy(() => import('./pages/client/CheckoutSuccessPage'));
+const ProfilePage = lazy(() => import('./pages/client/ProfilePage'));
+const NotFound = lazy(() => import('./pages/client/NotFound'));
 
 const ProfileSecurity = lazy(() => import('./components/profile/ProfileSecurity'));
-const ProfileInfo = lazy(() => import('./components/profile/ProfileInfo')); // Import here as it's now a route
+const ProfileInfo = lazy(() => import('./components/profile/ProfileInfo'));
 const ProfileOrders = lazy(() => import('./components/profile/ProfileOrders'));
 const ProfileAddresses = lazy(() => import('./components/profile/ProfileAddresses'));
 const ProfilePayments = lazy(() => import('./components/profile/ProfilePayments'));
 const ProfileDiscounts = lazy(() => import('./components/profile/ProfileDiscounts'));
 const ProfileContact = lazy(() => import('./components/profile/ProfileContact'));
-const LoginPage = lazy(() => import('./pages/LoginPage'));
-const RegisterPage = lazy(() => import('./pages/RegisterPage'));
-const WishlistPage = lazy(() => import('./pages/WishlistPage'));
+const LoginPage = lazy(() => import('./pages/client/LoginPage'));
+const RegisterPage = lazy(() => import('./pages/client/RegisterPage'));
+const WishlistPage = lazy(() => import('./pages/client/WishlistPage'));
+
+// Admin pages
+const AdminDashboard = lazy(() => import('./pages/admin/Dashboard'));
+// Add other admin pages as needed
+// const AdminOrders = lazy(() => import('./pages/admin/Orders'));
+// const AdminProducts = lazy(() => import('./pages/admin/Products'));
+// ...
 
 function App() {
     return (
         <ShopProvider>
             <Router>
                 <ScrollToTop />
-                <MainLayout>
-                    <Suspense fallback={<LoadingSpinner />}>
-                        <Routes>
+                <Suspense fallback={<LoadingSpinner />}>
+                    <Routes>
+                        {/* Client layout and routes */}
+                        <Route element={<MainLayout><Outlet /></MainLayout>}>
                             <Route path="/" element={<Home />} />
                             <Route path="/about" element={<About />} />
                             <Route path="/mya-personal" element={<MyaPersonal />} />
@@ -60,11 +77,25 @@ function App() {
                             <Route path="/login" element={<LoginPage />} />
                             <Route path="/register" element={<RegisterPage />} />
                             <Route path="/wishlist" element={<WishlistPage />} />
+                        </Route>
 
-                            <Route path="*" element={<NotFound />} />
-                        </Routes>
-                    </Suspense>
-                </MainLayout>
+                        {/* Admin layout and routes */}
+                        <Route path="/admin" element={<AdminLayout><Outlet /></AdminLayout>}>
+                            <Route index element={<AdminDashboard />} />
+                            <Route path="settings" element={<AdminSettings />} />
+                            <Route path="promotions" element={<AdminPromotions />} /> 
+                            <Route path="payments" element={<AdminPayments />} /> 
+                            <Route path="categories" element={<AdminCategories />} /> 
+                            <Route path="administration" element={<AdminAdministration />} /> 
+                            <Route path="clients" element={<AdminClients />} /> 
+                            <Route path="products" element={<AdminProducts />} /> 
+                            <Route path="orders" element={<AdminOrders />} /> 
+                        </Route>
+
+                        {/* Not found route */}
+                        <Route path="*" element={<NotFound />} />
+                    </Routes>
+                </Suspense>
             </Router>
         </ShopProvider>
     );

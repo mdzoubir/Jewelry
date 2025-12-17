@@ -1,10 +1,10 @@
 import React from 'react';
-import usePageTitle from '../hooks/usePageTitle';
-import aboutHero from '../assets/images/hero/about-hero.jpg';
+import usePageTitle from '../../hooks/usePageTitle';
+import aboutHero from '../../assets/images/hero/about-hero.jpg';
 import { Sparkles } from 'lucide-react';
-import MissionSection from '../components/about/MissionSection';
-import SolutionsSection from '../components/about/SolutionsSection';
-import NewProductsSection from '../components/about/NewProductsSection';
+import MissionSection from '../../components/about/MissionSection';
+import SolutionsSection from '../../components/about/SolutionsSection';
+import NewProductsSection from '../../components/about/NewProductsSection';
 
 const About: React.FC = () => {
     usePageTitle("Mya Oro | Chi Siamo");
