@@ -9,6 +9,8 @@ export interface Product {
     description: string | null;
     price: number;
     image_url: string | null;
+    is_sold_out?: number | boolean;
+    is_best_seller?: number | boolean;
     created_at: Date;
     updated_at: Date;
 }
@@ -69,6 +71,14 @@ export const updateProduct = async (id: number, product: Partial<Omit<Product, '
     if (product.image_url !== undefined) {
         fields.push('image_url = ?');
         values.push(product.image_url);
+    }
+    if (product.is_sold_out !== undefined) {
+        fields.push('is_sold_out = ?');
+        values.push(product.is_sold_out);
+    }
+    if (product.is_best_seller !== undefined) {
+        fields.push('is_best_seller = ?');
+        values.push(product.is_best_seller);
     }
 
     if (fields.length === 0) return false;

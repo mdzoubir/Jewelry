@@ -1,42 +1,65 @@
-import mysql from 'mysql2/promise';
-import dotenv from 'dotenv';
-import fs from 'fs';
-import path from 'path';
+import pool from './db';
 
-dotenv.config();
-
-export async function setupDatabase() {
-    const connection = await mysql.createConnection({
-        host: process.env.DB_HOST,
-        user: process.env.DB_USER,
-        password: process.env.DB_PASSWORD,
-    });
-
+export const setupDatabase = async () => {
+    const conn = await pool.getConnection();
     try {
-        await connection.query(`CREATE DATABASE IF NOT EXISTS \`${process.env.DB_NAME}\``);
-        console.log(`Database ${process.env.DB_NAME} created or already exists.`);
+        await conn.query(`
+            CREATE TABLE IF NOT EXISTS users (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                name VARCHAR(255) NOT NULL,
+                email VARCHAR(255) NOT NULL UNIQUE,
+                password_hash VARCHAR(255) NOT NULL,
+                role ENUM('client', 'admin') DEFAULT 'client',
+                phone VARCHAR(20),
+                marketing_consent BOOLEAN DEFAULT FALSE,
+                profiling_consent BOOLEAN DEFAULT FALSE,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            )
+        `);
 
-        await connection.query(`USE \`${process.env.DB_NAME}\``);
+        await conn.query(`
+            CREATE TABLE IF NOT EXISTS categories (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                parent_id INT,
+                name VARCHAR(255) NOT NULL,
+                slug VARCHAR(255) NOT NULL UNIQUE,
+                FOREIGN KEY (parent_id) REFERENCES categories(id) ON DELETE SET NULL
+            )
+        `);
 
-        const schemaPath = path.join(__dirname, '../../schema.sql');
-        const schema = fs.readFileSync(schemaPath, 'utf8');
-        const statements = schema.split(';').filter(stmt => stmt.trim());
+        await conn.query(`
+            CREATE TABLE IF NOT EXISTS products (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                category_id INT,
+                name VARCHAR(255) NOT NULL,
+                slug VARCHAR(255) NOT NULL UNIQUE,
+                description TEXT,
+                price DECIMAL(10, 2) NOT NULL,
+                image_url VARCHAR(255),
+                is_sold_out BOOLEAN DEFAULT FALSE,
+                is_best_seller BOOLEAN DEFAULT FALSE,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                FOREIGN KEY (category_id) REFERENCES categories(id) ON DELETE SET NULL
+            )
+        `);
 
-        for (const statement of statements) {
-            if (statement.trim()) {
-                await connection.query(statement);
-            }
-        }
-        console.log('Schema applied successfully.');
-    } catch (error) {
-        console.error('Error setting up database:', error);
-        throw error;
+        await conn.query(`
+            CREATE TABLE IF NOT EXISTS orders (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                user_id INT NOT NULL,
+                total_amount DECIMAL(10, 2) NOT NULL,
+                status ENUM('pending', 'paid', 'shipped', 'delivered', 'cancelled') DEFAULT 'pending',
+                shipping_address TEXT,
+                shipping_city VARCHAR(255),
+                shipping_zip VARCHAR(20),
+                shipping_country VARCHAR(255),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES users(id)
+            )
+        `);
+
     } finally {
-        await connection.end();
+        conn.release();
     }
-}
-
-// Run setup if executed directly
-if (require.main === module) {
-    setupDatabase();
-}
+};

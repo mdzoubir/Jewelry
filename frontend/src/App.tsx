@@ -14,7 +14,6 @@ import AdminClients from './pages/admin/AdminClients';
 import AdminProducts from './pages/admin/AdminProducts';
 import AdminOrders from './pages/admin/AdminOrders';
 
-// Lazy load pages
 const Home = lazy(() => import('./pages/client/Home'));
 const About = lazy(() => import('./pages/client/About'));
 const MyaPersonal = lazy(() => import('./pages/client/MyaPersonal'));
@@ -38,12 +37,7 @@ const LoginPage = lazy(() => import('./pages/client/LoginPage'));
 const RegisterPage = lazy(() => import('./pages/client/RegisterPage'));
 const WishlistPage = lazy(() => import('./pages/client/WishlistPage'));
 
-// Admin pages
 const AdminDashboard = lazy(() => import('./pages/admin/Dashboard'));
-// Add other admin pages as needed
-// const AdminOrders = lazy(() => import('./pages/admin/Orders'));
-// const AdminProducts = lazy(() => import('./pages/admin/Products'));
-// ...
 
 function App() {
     return (
@@ -83,13 +77,13 @@ function App() {
                         <Route path="/admin" element={<AdminLayout><Outlet /></AdminLayout>}>
                             <Route index element={<AdminDashboard />} />
                             <Route path="settings" element={<AdminSettings />} />
-                            <Route path="promotions" element={<AdminPromotions />} /> 
-                            <Route path="payments" element={<AdminPayments />} /> 
-                            <Route path="categories" element={<AdminCategories />} /> 
-                            <Route path="administration" element={<AdminAdministration />} /> 
-                            <Route path="clients" element={<AdminClients />} /> 
-                            <Route path="products" element={<AdminProducts />} /> 
-                            <Route path="orders" element={<AdminOrders />} /> 
+                            <Route path="promotions" element={<AdminPromotions />} />
+                            <Route path="payments" element={<AdminPayments />} />
+                            <Route path="categories" element={<AdminCategories />} />
+                            <Route path="administration" element={<AdminAdministration />} />
+                            <Route path="clients" element={<AdminClients />} />
+                            <Route path="products" element={<AdminProducts />} />
+                            <Route path="orders" element={<AdminOrders />} />
                         </Route>
 
                         {/* Not found route */}

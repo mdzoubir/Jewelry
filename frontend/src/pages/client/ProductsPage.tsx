@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import usePageTitle from '../../hooks/usePageTitle';
 import heroBg from '../../assets/images/about/about_mission.jpg';
 import ProductGrid from '../../components/products/ProductGrid';
@@ -8,30 +8,34 @@ import PageHero from '../../components/ui/PageHero';
 import FilterBar from '../../components/products/FilterBar';
 import Pagination from '../../components/ui/Pagination';
 
-const filterCategories = [
-    "Anniversario", "Fidanzamento", "Battesimo", "Cresima", "Comunione", "Laurea", "Natale", "San Valentino"
-];
-
 const ProductsPage: React.FC = () => {
     usePageTitle("Mya Oro | Gioielli per eventi");
     const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
-
-
     const [products, setProducts] = useState<any[]>([]);
+    const [categories, setCategories] = useState<any[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
-    React.useEffect(() => {
-        const fetchProducts = async () => {
+    useEffect(() => {
+        const fetchData = async () => {
             try {
-                // Use the relative path if proxy is set up or absolute URL from client config
-                // Assuming client.ts is configured with baseURL
-                const response = await import('../../api/client').then(m => m.default.get('/products'));
+                const client = (await import('../../api/client')).default;
+                const [productsRes, categoriesRes] = await Promise.all([
+                    client.get('/products'),
+                    client.get('/categories')
+                ]);
 
-                // Map backend data to UI format
-                const mappedProducts = response.data.map((p: any) => {
-                    let imageUrl = 'https://images.unsplash.com/photo-1599643478518-17488fbbcd75?q=80&w=2574&auto=format&fit=crop'; // Default fallback
+                const fetchedCategories = categoriesRes.data;
+                setCategories(fetchedCategories);
+
+                const categoryMap = fetchedCategories.reduce((acc: any, cat: any) => {
+                    acc[cat.id] = cat.name;
+                    return acc;
+                }, {});
+
+                const mappedProducts = productsRes.data.map((p: any) => {
+                    let imageUrl = 'https://images.unsplash.com/photo-1599643478518-17488fbbcd75?q=80&w=2574&auto=format&fit=crop';
 
                     if (p.image_url) {
                         if (p.image_url.startsWith('http')) {
@@ -48,34 +52,37 @@ const ProductsPage: React.FC = () => {
                         }
                     }
 
+                    const categoryName = p.category_id && categoryMap[p.category_id]
+                        ? categoryMap[p.category_id]
+                        : 'Altro';
+
                     return {
                         ...p,
                         img: imageUrl,
-                        category: p.category_id ? 'Gioielli' : 'Altro',
+                        category: categoryName,
                         price: Number(p.price),
                         isWishlisted: false,
-                        isBestSeller: false,
-                        isSoldOut: false
+                        isBestSeller: Boolean(p.is_best_seller),
+                        isSoldOut: Boolean(p.is_sold_out)
                     };
                 });
 
                 setProducts(mappedProducts);
             } catch (err) {
-                console.error("Failed to fetch products:", err);
+                console.error("Failed to fetch data:", err);
                 setError("Impossibile caricare i prodotti al momento.");
             } finally {
                 setLoading(false);
             }
         };
 
-        fetchProducts();
+        fetchData();
     }, []);
 
     const filteredProducts = selectedCategory
         ? products.filter(p => p.category === selectedCategory)
         : products;
 
-    // Pagination Logic
     const ITEMS_PER_PAGE = 16;
     const totalPages = Math.ceil(filteredProducts.length / ITEMS_PER_PAGE);
     const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
@@ -95,7 +102,6 @@ const ProductsPage: React.FC = () => {
 
     return (
         <div className="pt-24 md:pt-32 pb-20 px-4 md:px-8 max-w-[1920px] mx-auto min-h-screen">
-
             <PageHero
                 bgImage={heroBg}
                 title="Christmas Sale"
@@ -105,7 +111,7 @@ const ProductsPage: React.FC = () => {
             />
 
             <FilterBar
-                categories={filterCategories}
+                categories={categories.map(c => c.name)}
                 selectedCategory={selectedCategory}
                 onSelectCategory={(category) => {
                     setSelectedCategory(category);
@@ -113,10 +119,8 @@ const ProductsPage: React.FC = () => {
                 }}
             />
 
-            {/* Product Grid with Paginated Items */}
             <ProductGrid products={currentProducts} />
 
-            {/* Pagination Control */}
             <Pagination
                 currentPage={currentPage}
                 totalPages={totalPages}

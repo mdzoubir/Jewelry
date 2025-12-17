@@ -38,7 +38,6 @@ export const createProduct = async (req: Request, res: Response, next: NextFunct
     try {
         const { category_id, name, slug, description, price, image_url } = req.body;
 
-        // Basic validation (can be improved with express-validator)
         if (!name || !price || !slug) {
             res.status(400).json({ message: 'Name, price, and slug are required' });
             return;
@@ -70,7 +69,7 @@ export const updateProduct = async (req: Request, res: Response, next: NextFunct
 
         const success = await productModel.updateProduct(id, req.body);
         if (!success) {
-            res.status(404).json({ message: 'Product not found' }); // Or no changes made/bad fields
+            res.status(404).json({ message: 'Product not found' });
             return;
         }
 

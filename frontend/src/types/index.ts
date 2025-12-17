@@ -7,10 +7,8 @@ export interface Product {
     price: number;
     image_url?: string | null;
     created_at?: string;
-    // UI specific (optional/mapped)
     category?: string;
     images?: string[];
-    // Legacy UI fields (mapped)
     img?: string;
     isWishlisted?: boolean;
     isBestSeller?: boolean;

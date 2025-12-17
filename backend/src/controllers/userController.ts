@@ -1,108 +1,47 @@
-import { Request, Response } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import * as userModel from '../models/userModel';
-import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { validationResult } from 'express-validator';
-import { UserRole } from '../constants/roles';
+import bcrypt from 'bcrypt';
 
-export const index = async (req: Request, res: Response) => {
+export const register = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const users = await userModel.getAllUsers();
-        res.json(users);
-    } catch (err) {
-        res.status(500).json({ error: 'Failed to fetch users' });
-    }
-};
+        const { name, email, password, phone, marketing_consent, profiling_consent } = req.body;
 
-export const show = async (req: Request, res: Response) => {
-    try {
-        const id = Number(req.params.id);
-        const user = await userModel.getUserById(id);
-        if (user) {
-            res.json(user);
-        } else {
-            res.status(404).json({ error: 'User not found' });
-        }
-    } catch (err) {
-        res.status(500).json({ error: 'Failed to fetch user' });
-    }
-};
-
-export const create = async (req: Request, res: Response) => {
-    try {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            return res.status(400).json({ errors: errors.array() });
+        const existingUser = await userModel.getUserByEmail(email);
+        if (existingUser) {
+            return res.status(400).json({ message: 'User already exists' });
         }
 
-        const { name, email, password } = req.body;
         const password_hash = await bcrypt.hash(password, 10);
-        const newUser = await userModel.createUser({ name, email, password_hash });
+        const userId = await userModel.createUser({
+            name,
+            email,
+            password_hash,
+            role: 'client',
+            phone,
+            marketing_consent,
+            profiling_consent
+        });
 
-        // Remove password_hash from response
-        const { password_hash: _, ...userWithoutPassword } = newUser;
-        res.status(201).json(userWithoutPassword);
+        const token = jwt.sign({ id: userId, role: 'client' }, process.env.JWT_SECRET || 'secret', { expiresIn: '1d' });
+        res.status(201).json({ token, user: { id: userId, name, email, role: 'client' } });
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Failed to create user' });
+        next(err);
     }
 };
 
-export const update = async (req: Request, res: Response) => {
-    try {
-        const id = Number(req.params.id);
-        const success = await userModel.updateUser(id, req.body);
-        if (success) {
-            res.json({ message: 'User updated successfully' });
-        } else {
-            res.status(404).json({ error: 'User not found or no changes made' });
-        }
-    } catch (err) {
-        res.status(500).json({ error: 'Failed to update user' });
-    }
-};
-
-export const remove = async (req: Request, res: Response) => {
-    try {
-        const id = Number(req.params.id);
-        const success = await userModel.deleteUser(id);
-        if (success) {
-            res.json({ message: 'User deleted successfully' });
-        } else {
-            res.status(404).json({ error: 'User not found' });
-        }
-    } catch (err) {
-        res.status(500).json({ error: 'Failed to delete user' });
-    }
-};
-export const login = async (req: Request, res: Response) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-        return res.status(400).json({ errors: errors.array() });
-    }
-
+export const login = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const { email, password } = req.body;
-        const user = await userModel.findUserByEmail(email);
+        const user = await userModel.getUserByEmail(email);
 
-        if (!user || !user.password_hash) {
-            return res.status(401).json({ error: 'Invalid credentials' });
+        if (!user || !(await bcrypt.compare(password, user.password_hash))) {
+            return res.status(401).json({ message: 'Invalid credentials' });
         }
 
-        const match = await bcrypt.compare(password, user.password_hash);
-        if (!match) {
-            return res.status(401).json({ error: 'Invalid credentials' });
-        }
-
-        const token = jwt.sign(
-            { id: user.id, email: user.email, role: user.role },
-            process.env.JWT_SECRET as string,
-            { expiresIn: '1h' }
-        );
-
-        res.json({ token });
+        const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET || 'secret', { expiresIn: '1d' });
+        res.json({ token, user: { id: user.id, name: user.name, email: user.email, role: user.role } });
     } catch (err) {
-        console.error(err);
-        res.status(500).json({ error: 'Login failed' });
+        next(err);
     }
 };
