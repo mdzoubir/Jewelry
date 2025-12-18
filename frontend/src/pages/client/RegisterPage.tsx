@@ -1,10 +1,13 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Button from '../../components/ui/Button';
 
 const RegisterPage: React.FC = () => {
+    const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
     const [formData, setFormData] = useState({
         fullName: '',
         email: '',
@@ -21,11 +24,39 @@ const RegisterPage: React.FC = () => {
             ...prev,
             [name]: type === 'checkbox' ? checked : value
         }));
+        if (error) setError(null);
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // TODO: Implement registration logic
+
+        if (!formData.privacy) {
+            setError("Devi accettare la Privacy Policy per registrarti.");
+            return;
+        }
+
+        setIsLoading(true);
+        setError(null);
+
+        try {
+            const client = (await import('../../api/client')).default;
+            await client.post('/users/register', {
+                name: formData.fullName,
+                email: formData.email,
+                password: formData.password,
+                phone: formData.phone,
+                privacy: formData.privacy,
+                marketing_consent: formData.marketing,
+                profiling_consent: formData.profiling
+            });
+
+            navigate('/login');
+        } catch (err: any) {
+            const errorMessage = err.response?.data?.message || err.response?.data?.error || "Si è verificato un errore durante la registrazione.";
+            setError(errorMessage);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -47,6 +78,12 @@ const RegisterPage: React.FC = () => {
                         <p className="text-text-secondary text-sm">Usa le tue credenziali per creare il tuo account.</p>
                     </div>
 
+                    {error && (
+                        <div className="bg-red-50 text-red-500 p-3 rounded mb-6 text-sm text-center">
+                            {error}
+                        </div>
+                    )}
+
                     <form onSubmit={handleSubmit} className="space-y-5">
                         <div className="relative">
                             <input
@@ -55,6 +92,7 @@ const RegisterPage: React.FC = () => {
                                 value={formData.fullName}
                                 onChange={handleChange}
                                 placeholder="Nome e Cognome"
+                                required
                                 className="w-full px-4 py-3 rounded border border-gold text-gray-700 placeholder:text-[#C5C5C5] focus:outline-none focus:ring-1 focus:ring-gold pr-10"
                             />
                             <div className="absolute top-3 right-3 text-gold-dark">
@@ -71,6 +109,7 @@ const RegisterPage: React.FC = () => {
                                 value={formData.email}
                                 onChange={handleChange}
                                 placeholder="E-mail"
+                                required
                                 className="w-full px-4 py-3 rounded border border-gold text-gray-700 placeholder:text-[#C5C5C5] focus:outline-none focus:ring-1 focus:ring-gold pr-10"
                             />
                             <div className="absolute top-3 right-3 text-gold-dark">
@@ -87,6 +126,8 @@ const RegisterPage: React.FC = () => {
                                 value={formData.password}
                                 onChange={handleChange}
                                 placeholder="Password"
+                                required
+                                minLength={6}
                                 className="w-full px-4 py-3 rounded border border-gold text-gray-700 placeholder:text-[#C5C5C5] focus:outline-none focus:ring-1 focus:ring-gold pr-10"
                             />
                             <button
@@ -187,9 +228,10 @@ const RegisterPage: React.FC = () => {
                             <Button
                                 type="submit"
                                 variant="outline"
-                                className="px-12 py-3 text-base font-normal rounded border-text-secondary text-text-primary hover:border-gold-dark hover:text-gold-dark shadow-sm bg-white"
+                                disabled={isLoading}
+                                className="px-12 py-3 text-base font-normal rounded border-text-secondary text-text-primary hover:border-gold-dark hover:text-gold-dark shadow-sm bg-white disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                Registrati
+                                {isLoading ? 'Caricamento...' : 'Registrati'}
                             </Button>
                         </div>
                     </form>

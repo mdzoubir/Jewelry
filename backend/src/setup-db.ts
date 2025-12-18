@@ -9,7 +9,7 @@ export const setupDatabase = async () => {
                 name VARCHAR(255) NOT NULL,
                 email VARCHAR(255) NOT NULL UNIQUE,
                 password_hash VARCHAR(255) NOT NULL,
-                role ENUM('client', 'admin') DEFAULT 'client',
+                role ENUM('client', 'admin', 'customer') DEFAULT 'customer',
                 phone VARCHAR(20),
                 marketing_consent BOOLEAN DEFAULT FALSE,
                 profiling_consent BOOLEAN DEFAULT FALSE,
