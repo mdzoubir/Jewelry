@@ -30,7 +30,7 @@ export const getCartByUserId = async (userId: number): Promise<CartItem[]> => {
     const [rows] = await pool.query<RowDataPacket[]>(`
         SELECT 
             ci.id, ci.cart_id, ci.product_id, ci.quantity, ci.options,
-            p.name, p.price, p.image_url, p.slug, p.category_id
+            p.name, p.price, p.img as image_url, p.slug, p.category_id
         FROM cart_items ci
         JOIN products p ON ci.product_id = p.id
         WHERE ci.cart_id = ?

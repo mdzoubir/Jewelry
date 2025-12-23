@@ -5,8 +5,8 @@ import ScrollToTop from './components/layout/ScrollToTop';
 import LoadingSpinner from './components/ui/LoadingSpinner';
 import { ShopProvider } from './context/ShopContext';
 import AdminLayout from './components/layout/AdminLayout';
-import { AuthProvider } from './context/AuthContext';
 import ProtectedAdminRoute from './components/layout/ProtectedAdminRoute';
+import ProtectedRoute from './components/layout/ProtectedRoute';
 import AdminSettings from './pages/admin/AdminSettings';
 import AdminPromotions from './pages/admin/AdminPromotions';
 import AdminPayments from './pages/admin/AdminPayments';
@@ -15,6 +15,7 @@ import AdminAdministration from './pages/admin/AdminAdministration';
 import AdminClients from './pages/admin/AdminClients';
 import AdminProducts from './pages/admin/AdminProducts';
 import AdminOrders from './pages/admin/AdminOrders';
+import { AuthProvider } from './context/AuthContext';
 
 const Home = lazy(() => import('./pages/client/Home'));
 const About = lazy(() => import('./pages/client/About'));
@@ -60,15 +61,19 @@ function App() {
                                 <Route path="/checkout/shipping" element={<CheckoutAddressPage />} />
                                 <Route path="/checkout/payment" element={<CheckoutPaymentPage />} />
                                 <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
+                                <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
 
-                                <Route path="/profile" element={<ProfilePage />}>
-                                    <Route index element={<ProfileInfo />} />
-                                    <Route path="security" element={<ProfileSecurity />} />
-                                    <Route path="orders" element={<ProfileOrders />} />
-                                    <Route path="addresses" element={<ProfileAddresses />} />
-                                    <Route path="payments" element={<ProfilePayments />} />
-                                    <Route path="discounts" element={<ProfileDiscounts />} />
-                                    <Route path="contact" element={<ProfileContact />} />
+                                {/* Protected Profile Routes */}
+                                <Route element={<ProtectedRoute />}>
+                                    <Route path="/profile" element={<ProfilePage />}>
+                                        <Route index element={<ProfileInfo />} />
+                                        <Route path="security" element={<ProfileSecurity />} />
+                                        <Route path="orders" element={<ProfileOrders />} />
+                                        <Route path="addresses" element={<ProfileAddresses />} />
+                                        <Route path="payments" element={<ProfilePayments />} />
+                                        <Route path="discounts" element={<ProfileDiscounts />} />
+                                        <Route path="contact" element={<ProfileContact />} />
+                                    </Route>
                                 </Route>
 
                                 <Route path="/login" element={<LoginPage />} />
