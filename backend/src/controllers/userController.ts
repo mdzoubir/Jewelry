@@ -17,14 +17,14 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
             name,
             email,
             password_hash,
-            role: 'client',
+            role: 'customer',
             phone,
             marketing_consent,
             profiling_consent
         });
 
-        const token = jwt.sign({ id: userId, role: 'client' }, process.env.JWT_SECRET || 'secret', { expiresIn: '1d' });
-        res.status(201).json({ token, user: { id: userId, name, email, role: 'client' } });
+        const token = jwt.sign({ id: userId, role: 'customer' }, process.env.JWT_SECRET || 'secret', { expiresIn: '1d' });
+        res.status(201).json({ token, user: { id: userId, name, email, role: 'customer' } });
     } catch (err) {
         next(err);
     }

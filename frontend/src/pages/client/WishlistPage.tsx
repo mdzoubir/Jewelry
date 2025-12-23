@@ -45,7 +45,7 @@ const WishlistPage: React.FC = () => {
                                 <div key={product.id} className="w-full max-w-[320px] mx-auto">
                                     <ProductCard
                                         id={product.id}
-                                        image={product.img}
+                                        image={product.img || ''}
                                         name={product.name}
                                         price={product.price}
                                         isBestSeller={product.isBestSeller}

@@ -5,6 +5,8 @@ import ScrollToTop from './components/layout/ScrollToTop';
 import LoadingSpinner from './components/ui/LoadingSpinner';
 import { ShopProvider } from './context/ShopContext';
 import AdminLayout from './components/layout/AdminLayout';
+import { AuthProvider } from './context/AuthContext';
+import ProtectedAdminRoute from './components/layout/ProtectedAdminRoute';
 import AdminSettings from './pages/admin/AdminSettings';
 import AdminPromotions from './pages/admin/AdminPromotions';
 import AdminPayments from './pages/admin/AdminPayments';
@@ -41,57 +43,61 @@ const AdminDashboard = lazy(() => import('./pages/admin/Dashboard'));
 
 function App() {
     return (
-        <ShopProvider>
-            <Router>
-                <ScrollToTop />
-                <Suspense fallback={<LoadingSpinner />}>
-                    <Routes>
-                        {/* Client layout and routes */}
-                        <Route element={<MainLayout><Outlet /></MainLayout>}>
-                            <Route path="/" element={<Home />} />
-                            <Route path="/about" element={<About />} />
-                            <Route path="/mya-personal" element={<MyaPersonal />} />
-                            <Route path="/products" element={<ProductsPage />} />
-                            <Route path="/product/:id" element={<ProductDetailsPage />} />
-                            <Route path="/cart" element={<Cart />} />
-                            <Route path="/checkout/shipping" element={<CheckoutAddressPage />} />
-                            <Route path="/checkout/payment" element={<CheckoutPaymentPage />} />
-                            <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
+        <AuthProvider>
+            <ShopProvider>
+                <Router>
+                    <ScrollToTop />
+                    <Suspense fallback={<LoadingSpinner />}>
+                        <Routes>
+                            {/* Client layout and routes */}
+                            <Route element={<MainLayout><Outlet /></MainLayout>}>
+                                <Route path="/" element={<Home />} />
+                                <Route path="/about" element={<About />} />
+                                <Route path="/mya-personal" element={<MyaPersonal />} />
+                                <Route path="/products" element={<ProductsPage />} />
+                                <Route path="/product/:id" element={<ProductDetailsPage />} />
+                                <Route path="/cart" element={<Cart />} />
+                                <Route path="/checkout/shipping" element={<CheckoutAddressPage />} />
+                                <Route path="/checkout/payment" element={<CheckoutPaymentPage />} />
+                                <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
 
-                            <Route path="/profile" element={<ProfilePage />}>
-                                <Route index element={<ProfileInfo />} />
-                                <Route path="security" element={<ProfileSecurity />} />
-                                <Route path="orders" element={<ProfileOrders />} />
-                                <Route path="addresses" element={<ProfileAddresses />} />
-                                <Route path="payments" element={<ProfilePayments />} />
-                                <Route path="discounts" element={<ProfileDiscounts />} />
-                                <Route path="contact" element={<ProfileContact />} />
+                                <Route path="/profile" element={<ProfilePage />}>
+                                    <Route index element={<ProfileInfo />} />
+                                    <Route path="security" element={<ProfileSecurity />} />
+                                    <Route path="orders" element={<ProfileOrders />} />
+                                    <Route path="addresses" element={<ProfileAddresses />} />
+                                    <Route path="payments" element={<ProfilePayments />} />
+                                    <Route path="discounts" element={<ProfileDiscounts />} />
+                                    <Route path="contact" element={<ProfileContact />} />
+                                </Route>
+
+                                <Route path="/login" element={<LoginPage />} />
+                                <Route path="/register" element={<RegisterPage />} />
+                                <Route path="/wishlist" element={<WishlistPage />} />
                             </Route>
 
-                            <Route path="/login" element={<LoginPage />} />
-                            <Route path="/register" element={<RegisterPage />} />
-                            <Route path="/wishlist" element={<WishlistPage />} />
-                        </Route>
+                            {/* Admin layout and routes */}
+                            <Route element={<ProtectedAdminRoute />}>
+                                <Route path="/admin" element={<AdminLayout><Outlet /></AdminLayout>}>
+                                    <Route index element={<AdminDashboard />} />
+                                    <Route path="settings" element={<AdminSettings />} />
+                                    <Route path="promotions" element={<AdminPromotions />} />
+                                    <Route path="payments" element={<AdminPayments />} />
+                                    <Route path="categories" element={<AdminCategories />} />
+                                    <Route path="administration" element={<AdminAdministration />} />
+                                    <Route path="clients" element={<AdminClients />} />
+                                    <Route path="products" element={<AdminProducts />} />
+                                    <Route path="orders" element={<AdminOrders />} />
+                                </Route>
+                            </Route>
 
-                        {/* Admin layout and routes */}
-                        <Route path="/admin" element={<AdminLayout><Outlet /></AdminLayout>}>
-                            <Route index element={<AdminDashboard />} />
-                            <Route path="settings" element={<AdminSettings />} />
-                            <Route path="promotions" element={<AdminPromotions />} />
-                            <Route path="payments" element={<AdminPayments />} />
-                            <Route path="categories" element={<AdminCategories />} />
-                            <Route path="administration" element={<AdminAdministration />} />
-                            <Route path="clients" element={<AdminClients />} />
-                            <Route path="products" element={<AdminProducts />} />
-                            <Route path="orders" element={<AdminOrders />} />
-                        </Route>
-
-                        {/* Not found route */}
-                        <Route path="*" element={<NotFound />} />
-                    </Routes>
-                </Suspense>
-            </Router>
-        </ShopProvider>
+                            {/* Not found route */}
+                            <Route path="*" element={<NotFound />} />
+                        </Routes>
+                    </Suspense>
+                </Router>
+            </ShopProvider>
+        </AuthProvider>
     );
 }
 

@@ -14,7 +14,7 @@ const ProductSlider: React.FC<ProductSliderProps> = ({ products, className = '' 
                 <div key={product.id} className="min-w-[260px] md:min-w-[280px] snap-start">
                     <ProductCard
                         id={product.id}
-                        image={product.img}
+                        image={product.img || ''}
                         name={product.name}
                         price={product.price}
                         isBestSeller={product.isBestSeller}

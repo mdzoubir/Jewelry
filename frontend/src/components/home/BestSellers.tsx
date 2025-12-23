@@ -21,7 +21,7 @@ const BestSellers: React.FC = () => {
                         <div key={p.id} className="min-w-[160px] md:min-w-[250px] flex-shrink-0 snap-start">
                             <ProductCard
                                 id={p.id}
-                                image={p.img}
+                                image={p.img || ''}
                                 name={p.name}
                                 price={p.price}
                                 isBestSeller={p.isBestSeller}

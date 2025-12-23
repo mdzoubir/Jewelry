@@ -27,7 +27,7 @@ const NewProductsSection: React.FC = () => {
                 <div className="flex overflow-x-auto space-x-6 pb-12 scrollbar-hide snap-x snap-mandatory">
                     {products.map((p) => (
                         <div key={p.id} className="min-w-[260px] md:min-w-[300px] snap-start">
-                            <ProductCard id={p.id} image={p.img} name={p.name} price={p.price} isBestSeller={p.isBestSeller} imgFit="cover" />
+                            <ProductCard id={p.id} image={p.img || ''} name={p.name} price={p.price} isBestSeller={p.isBestSeller} imgFit="cover" />
                         </div>
                     ))}
                 </div>

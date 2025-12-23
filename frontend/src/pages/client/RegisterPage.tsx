@@ -3,6 +3,8 @@ import { Eye, EyeOff } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import Button from '../../components/ui/Button';
 
+import client from '../../api/client';
+
 const RegisterPage: React.FC = () => {
     const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
@@ -39,7 +41,6 @@ const RegisterPage: React.FC = () => {
         setError(null);
 
         try {
-            const client = (await import('../../api/client')).default;
             await client.post('/users/register', {
                 name: formData.fullName,
                 email: formData.email,
@@ -52,7 +53,8 @@ const RegisterPage: React.FC = () => {
 
             navigate('/login');
         } catch (err: any) {
-            const errorMessage = err.response?.data?.message || err.response?.data?.error || "Si è verificato un errore durante la registrazione.";
+            console.error("Registration Error:", err);
+            const errorMessage = err.response?.data?.message || "Si è verificato un errore durante la registrazione.";
             setError(errorMessage);
         } finally {
             setIsLoading(false);

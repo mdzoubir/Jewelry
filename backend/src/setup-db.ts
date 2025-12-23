@@ -55,6 +55,42 @@ export const setupDatabase = async () => {
                 shipping_zip VARCHAR(20),
                 shipping_country VARCHAR(255),
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            )
+        `);
+
+        await conn.query(`
+            CREATE TABLE IF NOT EXISTS carts (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                user_id INT NOT NULL,
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+            )
+        `);
+
+        await conn.query(`
+            CREATE TABLE IF NOT EXISTS cart_items (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                cart_id INT NOT NULL,
+                product_id INT NOT NULL,
+                quantity INT NOT NULL DEFAULT 1,
+                options JSON,
+                FOREIGN KEY (cart_id) REFERENCES carts(id) ON DELETE CASCADE,
+                FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+            )
+        `);
+
+        await conn.query(`
+            CREATE TABLE IF NOT EXISTS orders (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                user_id INT NOT NULL,
+                total_amount DECIMAL(10, 2) NOT NULL,
+                status ENUM('pending', 'paid', 'shipped', 'delivered', 'cancelled') DEFAULT 'pending',
+                shipping_address TEXT,
+                shipping_city VARCHAR(255),
+                shipping_zip VARCHAR(20),
+                shipping_country VARCHAR(255),
+                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (user_id) REFERENCES users(id)
             )
         `);

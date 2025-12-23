@@ -6,7 +6,7 @@ export interface User {
     name: string;
     email: string;
     password_hash: string;
-    role: 'client' | 'admin';
+    role: 'customer' | 'admin';
     phone?: string;
     marketing_consent?: boolean;
     profiling_consent?: boolean;

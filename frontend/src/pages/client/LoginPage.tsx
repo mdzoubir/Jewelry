@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Button from '../../components/ui/Button';
+import { useAuth } from '../../context/AuthContext';
 
 const LoginPage: React.FC = () => {
+    const navigate = useNavigate();
     const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({
         email: '',
@@ -17,9 +19,36 @@ const LoginPage: React.FC = () => {
         });
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const { login } = useAuth();
+    const [isLoading, setIsLoading] = useState(false);
+    const [error, setError] = useState<string | null>(null);
+
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        e.preventDefault();
+        setError(null);
+        setIsLoading(true);
+
+        try {
+            const client = (await import('../../api/client')).default;
+            const res = await client.post('/users/login', {
+                email: formData.email,
+                password: formData.password
+            });
+
+            const { token, user } = res.data;
+            login(token, user);
+
+            if (user.role === 'admin') {
+                navigate('/admin');
+            } else {
+                navigate('/');
+            }
+        } catch (err: any) {
+            const errorMessage = err.response?.data?.message || err.response?.data?.error || "Login fallito. Controlla le tue credenziali.";
+            setError(errorMessage);
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
@@ -40,6 +69,12 @@ const LoginPage: React.FC = () => {
                         <h1 className="text-3xl md:text-4xl font-serif text-[#6D635B] font-bold mb-3">Accedi o registrati</h1>
                         <p className="text-[#8A8A8A] text-sm">Usa le tue credenziali per accedere o creare il tuo account.</p>
                     </div>
+
+                    {error && (
+                        <div className="bg-red-50 text-red-500 p-3 rounded mb-6 text-sm text-center">
+                            {error}
+                        </div>
+                    )}
 
                     <form onSubmit={handleSubmit} className="space-y-6">
                         <div className="relative">
@@ -100,9 +135,10 @@ const LoginPage: React.FC = () => {
 
                             <Button
                                 type="submit"
-                                className="py-3 text-base font-normal rounded bg-[#A18A58] text-white hover:bg-[#8C734B] shadow-md"
+                                disabled={isLoading}
+                                className="py-3 text-base font-normal rounded bg-[#A18A58] text-white hover:bg-[#8C734B] shadow-md disabled:opacity-50 disabled:cursor-not-allowed"
                             >
-                                Accedi
+                                {isLoading ? 'Accesso in corso...' : 'Accedi'}
                             </Button>
                         </div>
 

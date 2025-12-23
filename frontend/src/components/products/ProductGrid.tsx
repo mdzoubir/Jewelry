@@ -55,7 +55,7 @@ const ProductGrid: React.FC<ProductGridProps> = ({ products }) => {
                         <div key={product.id} className="w-full">
                             <ProductCard
                                 id={product.id}
-                                image={product.img}
+                                image={product.img || ''}
                                 name={product.name}
                                 price={product.price}
                                 isBestSeller={product.isBestSeller}

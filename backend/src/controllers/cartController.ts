@@ -14,8 +14,8 @@ export const getCart = async (req: Request, res: Response, next: NextFunction) =
 export const addToCart = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const userId = (req as any).user.id;
-        const { product_id, quantity } = req.body;
-        await cartModel.addToCart(userId, product_id, quantity || 1);
+        const { product_id, quantity, options } = req.body; // Expanded to accept options
+        await cartModel.addToCart(userId, product_id, quantity || 1, options);
         res.status(200).json({ message: 'Item added to cart' });
     } catch (err) {
         next(err);
@@ -26,6 +26,7 @@ export const removeFromCart = async (req: Request, res: Response, next: NextFunc
     try {
         const userId = (req as any).user.id;
         const productId = Number(req.params.id);
+        // Note: Ideally should be item ID
         await cartModel.removeFromCart(userId, productId);
         res.status(200).json({ message: 'Item removed from cart' });
     } catch (err) {

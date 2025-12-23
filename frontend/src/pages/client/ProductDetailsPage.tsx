@@ -21,7 +21,7 @@ const ProductDetailsPage: React.FC = () => {
 
     const images = product.images && product.images.length > 0
         ? product.images
-        : [product.img, products[0]?.img || product.img, products[1]?.img || product.img];
+        : [product.img || '', products[0]?.img || '', products[1]?.img || ''].filter(Boolean);
 
     return (
         <div className="pt-36 pb-24 min-h-screen bg-white relative overflow-hidden font-sans">

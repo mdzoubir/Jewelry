@@ -1,6 +1,8 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
 import type { Product, CartItem } from '../types';
+import { useAuth } from './AuthContext';
+import client from '../api/client';
 
 interface ShopContextType {
     cartItems: CartItem[];
@@ -9,14 +11,14 @@ interface ShopContextType {
     updateQuantity: (uniqueId: string, quantity: number) => void;
     toggleItemSelection: (uniqueId: string) => void;
     shippingCost: number;
-    taxRate: number; // Percentage (e.g., 0.10 for 10%)
+    taxRate: number;
     subtotal: number;
     taxAmount: number;
     total: number;
     discountCode: string;
     applyDiscount: (code: string) => void;
     discountAmount: number;
-    wishlist: number[]; // Array of Product IDs
+    wishlist: number[];
     toggleWishlist: (productId: number) => void;
 }
 
@@ -36,6 +38,7 @@ interface ShopProviderProps {
 }
 
 export const ShopProvider: React.FC<ShopProviderProps> = ({ children }) => {
+    const { isAuthenticated } = useAuth();
     const [cartItems, setCartItems] = useState<CartItem[]>(() => {
         try {
             const saved = localStorage.getItem('mya_shop_cart');
@@ -61,39 +64,92 @@ export const ShopProvider: React.FC<ShopProviderProps> = ({ children }) => {
 
 
     const shippingCost = 15.00;
-    const taxRate = 0.10; // 10% IVA
-    const otherTax = 20.00; // "Altre TASSE"
+    const taxRate = 0.10;
+    const otherTax = 20.00;
 
 
-    // Save Cart to Local Storage
+    useEffect(() => {
+        const syncCart = async () => {
+            if (isAuthenticated) {
+                try {
+                    const response = await client.get('/cart');
+                    const serverCart = response.data;
+
+                    const mappedCart: CartItem[] = serverCart.map((item: any) => ({
+                        id: item.product_id,
+                        dbId: item.id,
+                        name: item.name,
+                        price: Number(item.price),
+                        img: item.image_url,
+                        slug: item.slug,
+                        uniqueId: `${item.product_id}-${item.id}`,
+                        quantity: item.quantity,
+                        ...item.options,
+                        isSelected: true
+                    }));
+
+                    setCartItems(mappedCart);
+
+                } catch (error) {
+                    console.error("Failed to sync cart", error);
+                }
+            }
+        };
+        syncCart();
+    }, [isAuthenticated]);
+
     useEffect(() => {
         localStorage.setItem('mya_shop_cart', JSON.stringify(cartItems));
     }, [cartItems]);
 
-    // Save Wishlist to Local Storage
     useEffect(() => {
         localStorage.setItem('mya_shop_wishlist', JSON.stringify(wishlist));
     }, [wishlist]);
 
-    const addToCart = (product: Product, options?: Partial<CartItem>) => {
+    const addToCart = async (product: Product, options?: Partial<CartItem>) => {
         const newItem: CartItem = {
             ...product,
-            uniqueId: `${product.id}-${Date.now()}`, // Simple unique ID generation
+            uniqueId: `${product.id}-${Date.now()}`,
             quantity: 1,
             selectedSize: options?.selectedSize || "5,6mm",
             selectedMaterial: options?.selectedMaterial || "Oro bianco",
             weight: options?.weight || "4 gr",
             carats: options?.carats || "16k",
             gender: options?.gender || "F",
-            isSelected: true, // Default to selected
+            isSelected: true,
             ...options
         };
 
         setCartItems(prev => [...prev, newItem]);
+
+        if (isAuthenticated) {
+            try {
+                const backendOptions = {
+                    selectedSize: newItem.selectedSize,
+                    selectedMaterial: newItem.selectedMaterial,
+                };
+                await client.post('/cart', {
+                    product_id: product.id,
+                    quantity: 1,
+                    options: backendOptions
+                });
+            } catch (error) {
+                console.error("Failed to add to backend cart", error);
+            }
+        }
     };
 
-    const removeFromCart = (uniqueId: string) => {
+    const removeFromCart = async (uniqueId: string) => {
+        const itemToRemove = cartItems.find(item => item.uniqueId === uniqueId);
         setCartItems(prev => prev.filter(item => item.uniqueId !== uniqueId));
+
+        if (isAuthenticated && itemToRemove) {
+            try {
+                await client.delete(`/cart/${itemToRemove.id}`);
+            } catch (error) {
+                console.error("Failed to remove from backend cart", error);
+            }
+        }
     };
 
     const updateQuantity = (uniqueId: string, quantity: number) => {
@@ -123,7 +179,7 @@ export const ShopProvider: React.FC<ShopProviderProps> = ({ children }) => {
 
         if (code === "DISCOUNT10") {
             setDiscountCode(code);
-            setDiscountAmount(10.00); // Flat 10 euro off
+            setDiscountAmount(10.00);
         } else {
             setDiscountCode("");
             setDiscountAmount(0);
@@ -135,7 +191,6 @@ export const ShopProvider: React.FC<ShopProviderProps> = ({ children }) => {
     const subtotal = selectedItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const taxAmount = subtotal * taxRate;
 
-    // Calculate total including shipping and taxes, minus discount
     const total = subtotal > 0
         ? (subtotal + shippingCost + taxAmount + otherTax) - discountAmount
         : 0;

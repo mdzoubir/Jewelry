@@ -2,7 +2,7 @@ export interface Product {
     id: number;
     category_id?: number | null;
     name: string;
-    slug: string;
+    slug?: string;
     description?: string | null;
     price: number;
     image_url?: string | null;
@@ -23,8 +23,9 @@ export interface Product {
 
 export interface CartItem extends Product {
     uniqueId: string;
+    dbId?: number; // Database ID for backend sync
     quantity: number;
-    selectedSize: string;
+    selectedSize?: string;
     selectedMaterial: string;
     weight: string;
     carats: string;
@@ -55,3 +56,10 @@ export interface Category {
 }
 
 
+export interface User {
+    id: number;
+    name: string;
+    email: string;
+    role: 'customer' | 'admin';
+    phone?: string;
+}
