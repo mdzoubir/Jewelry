@@ -1,10 +1,54 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import ProductCard from '../ui/ProductCard';
-import { products } from '../../data/mockData';
 import Button from '../ui/Button';
+import client from '../../api/client';
+import type { Product } from '../../types';
 
 const BestSellers: React.FC = () => {
+    const [products, setProducts] = useState<Product[]>([]);
+    const [loading, setLoading] = useState(true);
 
+    useEffect(() => {
+        const fetchBestSellers = async () => {
+            try {
+                const res = await client.get('/products');
+                const allProducts = res.data;
+                const bestSellers = allProducts.filter((p: any) => p.is_best_seller).slice(0, 4);
+
+                const displayProducts = bestSellers.length > 0 ? bestSellers : allProducts.slice(0, 4);
+
+                const mappedProducts = displayProducts.map((p: any) => {
+                    let imageUrl = 'https://images.unsplash.com/photo-1599643478518-17488fbbcd75?q=80&w=2574&auto=format&fit=crop';
+                    const dbImage = p.img || p.image_url;
+
+                    if (dbImage) {
+                        if (dbImage.startsWith('http')) {
+                            imageUrl = dbImage;
+                        } else {
+                            const baseUrl = 'http://localhost:3000';
+                            let path = dbImage;
+                            if (!path.startsWith('uploads/') && !path.startsWith('/uploads/')) {
+                                path = `uploads/${path}`;
+                            }
+                            imageUrl = `${baseUrl}/${path.replace(/^\//, '')}`;
+                        }
+                    }
+                    return { ...p, img: imageUrl };
+                });
+
+                setProducts(mappedProducts);
+            } catch (error) {
+                console.error("Failed to fetch best sellers", error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchBestSellers();
+    }, []);
+
+    if (loading) return <div className="py-20 text-center">Caricamento...</div>;
+    if (products.length === 0) return null;
 
     return (
         <section className="relative z-20 -mt-24 md:-mt-32">
@@ -17,14 +61,14 @@ const BestSellers: React.FC = () => {
                 </div>
 
                 <div className="flex overflow-x-auto space-x-4 md:space-x-6 pb-4 scrollbar-hide snap-x snap-mandatory">
-                    {products.slice(0, 4).map((p) => (
+                    {products.map((p) => (
                         <div key={p.id} className="min-w-[160px] md:min-w-[250px] flex-shrink-0 snap-start">
                             <ProductCard
                                 id={p.id}
                                 image={p.img || ''}
                                 name={p.name}
-                                price={p.price}
-                                isBestSeller={p.isBestSeller}
+                                price={Number(p.price)}
+                                isBestSeller={Boolean(p.isBestSeller)}
                             />
                         </div>
                     ))}
