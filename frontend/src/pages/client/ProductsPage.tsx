@@ -7,6 +7,7 @@ import QuoteSection from '../../components/products/QuoteSection';
 import PageHero from '../../components/ui/PageHero';
 import FilterBar from '../../components/products/FilterBar';
 import Pagination from '../../components/ui/Pagination';
+import { API_BASE_URL } from '../../api/client';
 
 const ProductsPage: React.FC = () => {
     usePageTitle("Mya Oro | Gioielli per eventi");
@@ -41,14 +42,13 @@ const ProductsPage: React.FC = () => {
                         if (p.image_url.startsWith('http')) {
                             imageUrl = p.image_url;
                         } else {
-                            const baseUrl = 'http://localhost:3000';
                             let path = p.image_url;
 
                             if (!path.startsWith('uploads/') && !path.startsWith('/uploads/')) {
                                 path = `uploads/${path}`;
                             }
 
-                            imageUrl = `${baseUrl}/${path.replace(/^\//, '')}`;
+                            imageUrl = `${API_BASE_URL}/${path.replace(/^\//, '')}`;
                         }
                     }
 

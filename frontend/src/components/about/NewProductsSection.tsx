@@ -1,13 +1,48 @@
-import React from 'react';
-
+import React, { useEffect, useState } from 'react';
 import ProductCard from '../ui/ProductCard';
-import { products } from '../../data/mockData';
+import client, { API_BASE_URL } from '../../api/client';
+import type { Product } from '../../types';
 
 const NewProductsSection: React.FC = () => {
+    const [products, setProducts] = useState<Product[]>([]);
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            try {
+                const res = await client.get('/products');
+                // Taking first 10 products as "New"
+                const fetchedProducts = res.data.slice(0, 10);
+
+                const mapped = fetchedProducts.map((p: any) => {
+                    let imageUrl = 'https://images.unsplash.com/photo-1599643478518-17488fbbcd75?q=80&w=2574&auto=format&fit=crop';
+                    const dbImage = p.img || p.image_url;
+
+                    if (dbImage) {
+                        if (dbImage.startsWith('http')) {
+                            imageUrl = dbImage;
+                        } else {
+                            let path = dbImage;
+                            if (!path.startsWith('uploads/') && !path.startsWith('/uploads/')) {
+                                path = `uploads/${path}`;
+                            }
+                            imageUrl = `${API_BASE_URL}/${path.replace(/^\//, '')}`;
+                        }
+                    }
+                    return { ...p, img: imageUrl };
+                });
+
+                setProducts(mapped);
+            } catch (err) {
+                console.error("Error fetching new products", err);
+            }
+        };
+        fetchProducts();
+    }, []);
+
+    if (products.length === 0) return null;
+
     return (
         <section className="py-24 px-4 md:px-8 bg-white relative">
-
-
             <div className="max-w-7xl mx-auto relative z-10">
                 {/* Header */}
                 <h2 className="text-3xl md:text-4xl font-title font-bold text-[#A89160] mb-8 text-left">
@@ -27,7 +62,7 @@ const NewProductsSection: React.FC = () => {
                 <div className="flex overflow-x-auto space-x-6 pb-12 scrollbar-hide snap-x snap-mandatory">
                     {products.map((p) => (
                         <div key={p.id} className="min-w-[260px] md:min-w-[300px] snap-start">
-                            <ProductCard id={p.id} image={p.img || ''} name={p.name} price={p.price} isBestSeller={p.isBestSeller} imgFit="cover" />
+                            <ProductCard id={p.id} image={p.img || ''} name={p.name} price={Number(p.price)} isBestSeller={Boolean(p.isBestSeller)} imgFit="cover" />
                         </div>
                     ))}
                 </div>

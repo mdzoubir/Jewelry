@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import ProductCard from '../ui/ProductCard';
 import Button from '../ui/Button';
-import client from '../../api/client';
+import client, { API_BASE_URL } from '../../api/client';
 import type { Product } from '../../types';
 
 const BestSellers: React.FC = () => {
@@ -25,12 +25,11 @@ const BestSellers: React.FC = () => {
                         if (dbImage.startsWith('http')) {
                             imageUrl = dbImage;
                         } else {
-                            const baseUrl = 'http://localhost:3000';
                             let path = dbImage;
                             if (!path.startsWith('uploads/') && !path.startsWith('/uploads/')) {
                                 path = `uploads/${path}`;
                             }
-                            imageUrl = `${baseUrl}/${path.replace(/^\//, '')}`;
+                            imageUrl = `${API_BASE_URL}/${path.replace(/^\//, '')}`;
                         }
                     }
                     return { ...p, img: imageUrl };
