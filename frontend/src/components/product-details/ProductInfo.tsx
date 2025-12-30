@@ -11,7 +11,7 @@ interface ProductInfoProps {
 }
 
 const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
-    const { addToCart } = useShop();
+    const { addToCart, wishlist, toggleWishlist } = useShop();
     const [isAdded, setIsAdded] = useState(false);
 
     // Default sizes if product has none
@@ -207,9 +207,20 @@ const ProductInfo: React.FC<ProductInfoProps> = ({ product }) => {
 
             <div className="grid grid-cols-2 gap-4 mt-4">
 
-                <button className="flex items-center justify-center gap-2 py-3 border border-[#E5E5E5] text-[#9A9A9A] text-xs font-bold tracking-widest hover:border-[#C5A572] hover:text-[#C5A572] transition-colors uppercase rounded-sm group">
-                    <Heart size={16} className="group-hover:scale-110 transition-transform" />
-                    Aggiungi alla Wishlist
+                <button
+                    onClick={() => toggleWishlist(product.id)}
+                    className={`flex items-center justify-center gap-2 py-3 border text-xs font-bold tracking-widest transition-colors uppercase rounded-sm group
+                        ${wishlist.includes(product.id)
+                            ? 'border-[#A89160] text-[#A89160] bg-[#A89160]/5'
+                            : 'border-[#E5E5E5] text-[#9A9A9A] hover:border-[#C5A572] hover:text-[#C5A572]'
+                        }
+                    `}
+                >
+                    <Heart
+                        size={16}
+                        className={`transition-transform duration-300 ${wishlist.includes(product.id) ? 'fill-current scale-110' : 'group-hover:scale-110'}`}
+                    />
+                    {wishlist.includes(product.id) ? "Nella Wishlist" : "Aggiungi alla Wishlist"}
                 </button>
 
                 <button className="flex items-center justify-center gap-2 py-3 border border-[#E5E5E5] text-[#9A9A9A] text-xs font-bold tracking-widest hover:border-[#5A5A5A] hover:text-[#5A5A5A] transition-colors uppercase rounded-sm">

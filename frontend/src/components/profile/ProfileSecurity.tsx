@@ -4,6 +4,7 @@ import Button from '../ui/Button';
 import PasswordResetModal from './PasswordResetModal';
 import TwoFactorModal from './TwoFactorModal';
 import SuccessModal from './SuccessModal';
+import { useAuth } from '../../context/AuthContext';
 
 const ProfileSecurity: React.FC = () => {
     const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
@@ -18,12 +19,18 @@ const ProfileSecurity: React.FC = () => {
         profiling: true
     });
 
-    const handlePasswordReset = () => {
+    const { user } = useAuth();
+
+    const handlePasswordReset = async (email: string) => {
+        console.log("Password reset requested for:", email);
+        // In a real app, this would trigger a backend password reset email
+        // For now, we can perhaps use the updateProfile endpoint if we implemented password change there directly via modal?
+        // The modal currently asks for email.
         setIsPasswordModalOpen(false);
         setSuccessState({
             show: true,
             title: "Email inviata",
-            message: "Controlla la tua posta per il link di reset."
+            message: "Controlla la tua posta per il reset della password (Simulato)."
         });
     };
 
@@ -77,14 +84,12 @@ const ProfileSecurity: React.FC = () => {
                     </div>
 
                     {/* Email Field */}
-                    <div className="space-y-1">
-                        <input
-                            type="text"
-                            value="d************@gmail.com"
-                            readOnly
-                            className="w-full px-4 py-3 rounded border border-[#E5E0D5] text-gray-500 bg-transparent focus:outline-none"
-                        />
-                    </div>
+                    <input
+                        type="text"
+                        value={user?.email || ''}
+                        readOnly
+                        className="w-full px-4 py-3 rounded border border-[#E5E0D5] text-gray-500 bg-transparent focus:outline-none"
+                    />
 
                     {/* Password Field */}
                     <div className="space-y-1">

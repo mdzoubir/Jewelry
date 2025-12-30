@@ -1,18 +1,19 @@
 import React from 'react';
 import { User, UserCheck, Baby, Gem, CircleDot, SlidersHorizontal } from 'lucide-react';
 import DualRangeSlider from '../ui/DualRangeSlider';
+import type { FilterState } from '../../types';
 
 interface SidebarFilterProps {
     isOpen: boolean;
     onClose: () => void;
-    filters: any;
-    setFilters: (filters: any) => void;
+    filters: FilterState;
+    setFilters: React.Dispatch<React.SetStateAction<FilterState>>;
 }
 
 const SidebarFilter: React.FC<SidebarFilterProps> = ({ isOpen, onClose, filters, setFilters }) => {
     // Helper to update a specific filter field
-    const updateFilter = (key: string, value: any) => {
-        setFilters((prev: any) => ({ ...prev, [key]: value }));
+    const updateFilter = (key: keyof FilterState, value: any) => {
+        setFilters((prev) => ({ ...prev, [key]: value }));
     };
 
     if (!isOpen) return null;

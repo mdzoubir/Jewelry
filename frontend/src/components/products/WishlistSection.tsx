@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import ProductSlider from '../ui/ProductSlider';
-import { products } from '../../data/mockData';
+import client, { API_BASE_URL } from '../../api/client';
+import type { Product } from '../../types';
 import DiamondDivider from '../ui/DiamondDivider';
 
 // Placeholder or similar hand asset - likely hand-3.png based on name
@@ -8,8 +9,38 @@ import handDecoration from '../../assets/images/ui/hand-3.png';
 import Button from '../ui/Button';
 
 const WishlistSection: React.FC = () => {
-    // Just grab some products for now
-    const wishlistProducts = products.slice(2, 10);
+    const [wishlistProducts, setWishlistProducts] = useState<Product[]>([]);
+
+    useEffect(() => {
+        const fetchWishlist = async () => {
+            try {
+                const res = await client.get('/products');
+                const all = res.data;
+                // Taking a different slice to show different products than Suggested
+                const wishlist = all.slice(4, 12).map((p: any) => {
+                    let imageUrl = 'https://images.unsplash.com/photo-1599643478518-17488fbbcd75?q=80&w=2574&auto=format&fit=crop';
+                    const dbImage = p.img || p.image_url;
+
+                    if (dbImage) {
+                        if (dbImage.startsWith('http')) {
+                            imageUrl = dbImage;
+                        } else {
+                            let path = dbImage;
+                            if (!path.startsWith('uploads/') && !path.startsWith('/uploads/')) {
+                                path = `uploads/${path}`;
+                            }
+                            imageUrl = `${API_BASE_URL}/${path.replace(/^\//, '')}`;
+                        }
+                    }
+                    return { ...p, img: imageUrl };
+                });
+                setWishlistProducts(wishlist);
+            } catch (err) {
+                console.error("Failed to fetch wishlist products", err);
+            }
+        };
+        fetchWishlist();
+    }, []);
 
     return (
         <section className="py-12 bg-white relative overflow-hidden">
@@ -26,7 +57,7 @@ const WishlistSection: React.FC = () => {
                             </div>
 
                             <h2 className="text-3xl md:text-5xl font-serif font-normal text-[#A89160] tracking-wide whitespace-nowrap px-4">
-                                I miei desideri
+                                Potrebbe interessarti anche
                             </h2>
 
                             <div className="flex items-center flex-grow">

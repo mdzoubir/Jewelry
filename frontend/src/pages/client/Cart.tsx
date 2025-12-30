@@ -55,7 +55,7 @@ const Cart: React.FC = () => {
                     <div className="lg:col-span-1">
                         <div className="sticky top-32">
                             <CartSummary
-                                onCheckout={() => navigate('/checkout/shipping')}
+                                onCheckout={() => navigate('/checkout')}
                                 buttonText="Procedi all'ordine"
                             />
                         </div>

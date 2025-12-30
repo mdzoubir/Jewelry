@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import * as productModel from '../models/productModel';
+import { productSchema, updateProductSchema } from '../schemas';
 
 export const getProducts = async (req: Request, res: Response, next: NextFunction) => {
     try {
@@ -36,20 +37,15 @@ export const getProductById = async (req: Request, res: Response, next: NextFunc
 
 export const createProduct = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { category_id, name, slug, description, price, image_url } = req.body;
-
-        if (!name || !price || !slug) {
-            res.status(400).json({ message: 'Name, price, and slug are required' });
-            return;
-        }
+        const validatedData = productSchema.parse(req.body);
 
         const newProductId = await productModel.createProduct({
-            category_id,
-            name,
-            slug,
-            description,
-            price,
-            image_url
+            category_id: validatedData.category_id ?? null,
+            name: validatedData.name,
+            slug: validatedData.slug,
+            description: validatedData.description ?? null,
+            price: validatedData.price,
+            image_url: validatedData.image_url ?? null
         });
 
         const newProduct = await productModel.getProductById(newProductId);
@@ -67,7 +63,9 @@ export const updateProduct = async (req: Request, res: Response, next: NextFunct
             return;
         }
 
-        const success = await productModel.updateProduct(id, req.body);
+        const validatedData = updateProductSchema.parse(req.body);
+
+        const success = await productModel.updateProduct(id, validatedData);
         if (!success) {
             res.status(404).json({ message: 'Product not found' });
             return;

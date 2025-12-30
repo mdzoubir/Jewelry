@@ -23,9 +23,8 @@ const MyaPersonal = lazy(() => import('./pages/client/MyaPersonal'));
 const ProductsPage = lazy(() => import('./pages/client/ProductsPage'));
 const ProductDetailsPage = lazy(() => import('./pages/client/ProductDetailsPage'));
 const Cart = lazy(() => import('./pages/client/Cart'));
-const CheckoutAddressPage = lazy(() => import('./pages/client/CheckoutAddressPage'));
-const CheckoutPaymentPage = lazy(() => import('./pages/client/CheckoutPaymentPage'));
-const CheckoutSuccessPage = lazy(() => import('./pages/client/CheckoutSuccessPage'));
+const CheckoutPage = lazy(() => import('./pages/client/CheckoutPage'));
+const OrderSuccessPage = lazy(() => import('./pages/client/OrderSuccessPage'));
 const ProfilePage = lazy(() => import('./pages/client/ProfilePage'));
 const NotFound = lazy(() => import('./pages/client/NotFound'));
 
@@ -58,13 +57,12 @@ function App() {
                                 <Route path="/products" element={<ProductsPage />} />
                                 <Route path="/product/:id" element={<ProductDetailsPage />} />
                                 <Route path="/cart" element={<Cart />} />
-                                <Route path="/checkout/shipping" element={<CheckoutAddressPage />} />
-                                <Route path="/checkout/payment" element={<CheckoutPaymentPage />} />
-                                <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
-                                <Route path="/checkout/success" element={<CheckoutSuccessPage />} />
 
-                                {/* Protected Profile Routes */}
+
+                                {/* Protected Profile & Checkout Routes */}
                                 <Route element={<ProtectedRoute />}>
+                                    <Route path="/checkout" element={<CheckoutPage />} />
+                                    <Route path="/order-success" element={<OrderSuccessPage />} />
                                     <Route path="/profile" element={<ProfilePage />}>
                                         <Route index element={<ProfileInfo />} />
                                         <Route path="security" element={<ProfileSecurity />} />

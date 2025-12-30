@@ -1,14 +1,46 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import ProductSlider from '../ui/ProductSlider';
-import { products } from '../../data/mockData';
+import client, { API_BASE_URL } from '../../api/client';
+import type { Product } from '../../types';
 import DiamondDivider from '../ui/DiamondDivider';
 
 import diamonHand from '../../assets/images/ui/diamon-hand.png';
 import Button from '../ui/Button';
 
 const SuggestedProducts: React.FC = () => {
-    // Get unique categories for suggestions (filter out current if needed, but for now generic)
-    const suggestedProducts = products.filter(p => !p.isBestSeller).slice(0, 8); // Just random selection
+    const [suggestedProducts, setSuggestedProducts] = useState<Product[]>([]);
+
+    useEffect(() => {
+        const fetchSuggested = async () => {
+            try {
+                const res = await client.get('/products');
+                // Just take some products that are NOT best sellers, or just the first few 
+                // Since backend doesn't filter by "not best seller" easily without params, we do it here or just take slice
+                const all = res.data;
+                const suggestions = all.slice(0, 8).map((p: any) => {
+                    let imageUrl = 'https://images.unsplash.com/photo-1599643478518-17488fbbcd75?q=80&w=2574&auto=format&fit=crop';
+                    const dbImage = p.img || p.image_url;
+
+                    if (dbImage) {
+                        if (dbImage.startsWith('http')) {
+                            imageUrl = dbImage;
+                        } else {
+                            let path = dbImage;
+                            if (!path.startsWith('uploads/') && !path.startsWith('/uploads/')) {
+                                path = `uploads/${path}`;
+                            }
+                            imageUrl = `${API_BASE_URL}/${path.replace(/^\//, '')}`;
+                        }
+                    }
+                    return { ...p, img: imageUrl };
+                });
+                setSuggestedProducts(suggestions);
+            } catch (err) {
+                console.error("Failed to fetch suggested products", err);
+            }
+        };
+        fetchSuggested();
+    }, []);
 
     return (
         <section className="py-24 bg-white relative overflow-hidden">

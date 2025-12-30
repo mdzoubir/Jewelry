@@ -59,9 +59,9 @@ export const addToCart = async (userId: number, productId: number, quantity: num
     }
 };
 
-export const removeFromCart = async (userId: number, productId: number): Promise<void> => {
+export const removeFromCart = async (userId: number, itemId: number): Promise<void> => {
     const cartId = await getOrCreateCart(userId);
-    await pool.query('DELETE FROM cart_items WHERE cart_id = ? AND product_id = ?', [cartId, productId]);
+    await pool.query('DELETE FROM cart_items WHERE id = ? AND cart_id = ?', [itemId, cartId]);
 };
 
 export const clearCart = async (userId: number): Promise<void> => {

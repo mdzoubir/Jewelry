@@ -11,25 +11,25 @@ import {
   Eye,
 } from "lucide-react";
 
-interface Column {
-  key: string;
+interface Column<T> {
+  key: keyof T | string; // Allow string for computed columns involving multiple fields
   label: string;
   sortable?: boolean;
-  render?: (value: any, row: any) => React.ReactNode;
+  render?: (value: any, row: T) => React.ReactNode;
 }
 
-interface AdminTableProps {
+interface AdminTableProps<T> {
   title: string;
   description: string;
   searchPlaceholder: string;
   addButtonText: string;
-  columns: Column[];
-  data: any[];
+  columns: Column<T>[];
+  data: T[];
   onAdd?: () => void;
   onEdit?: (id: number) => void;
   onDelete?: (id: number) => void;
   onView?: (id: number) => void;
-  customActions?: (row: any) => React.ReactNode;
+  customActions?: (row: T) => React.ReactNode;
   showActions?: boolean;
   showViewAction?: boolean;
   currentPage?: number;
@@ -38,7 +38,7 @@ interface AdminTableProps {
   onPageChange?: (page: number) => void;
 }
 
-function AdminTable({
+function AdminTable<T extends { id: number } & Record<string, any>>({
   title,
   description,
   searchPlaceholder,
@@ -56,7 +56,7 @@ function AdminTable({
   totalPages = 1,
   totalItems = 0,
   onPageChange,
-}: AdminTableProps) {
+}: AdminTableProps<T>) {
   const [searchQuery, setSearchQuery] = useState("");
 
   const getStatusBadge = (status: string) => {
@@ -74,9 +74,8 @@ function AdminTable({
 
     return (
       <span
-        className={`inline-flex px-3 py-1 text-xs font-medium rounded-full ${
-          statusColors[status] || "bg-gray-100 text-gray-700"
-        }`}
+        className={`inline-flex px-3 py-1 text-xs font-medium rounded-full ${statusColors[status] || "bg-gray-100 text-gray-700"
+          }`}
       >
         {status}
       </span>
@@ -93,11 +92,10 @@ function AdminTable({
         key={1}
         onClick={() => onPageChange?.(1)}
         disabled={currentPage === 1}
-        className={`px-3 py-1 text-sm rounded ${
-          currentPage === 1
-            ? "bg-gray-200 text-gray-900"
-            : "text-gray-700 hover:bg-gray-100"
-        }`}
+        className={`px-3 py-1 text-sm rounded ${currentPage === 1
+          ? "bg-gray-200 text-gray-900"
+          : "text-gray-700 hover:bg-gray-100"
+          }`}
       >
         1
       </button>
@@ -122,11 +120,10 @@ function AdminTable({
         <button
           key={i}
           onClick={() => onPageChange?.(i)}
-          className={`px-3 py-1 text-sm rounded ${
-            currentPage === i
-              ? "bg-gray-200 text-gray-900"
-              : "text-gray-700 hover:bg-gray-100"
-          }`}
+          className={`px-3 py-1 text-sm rounded ${currentPage === i
+            ? "bg-gray-200 text-gray-900"
+            : "text-gray-700 hover:bg-gray-100"
+            }`}
         >
           {i}
         </button>
@@ -148,11 +145,10 @@ function AdminTable({
         <button
           key={totalPages}
           onClick={() => onPageChange?.(totalPages)}
-          className={`px-3 py-1 text-sm rounded ${
-            currentPage === totalPages
-              ? "bg-gray-200 text-gray-900"
-              : "text-gray-700 hover:bg-gray-100"
-          }`}
+          className={`px-3 py-1 text-sm rounded ${currentPage === totalPages
+            ? "bg-gray-200 text-gray-900"
+            : "text-gray-700 hover:bg-gray-100"
+            }`}
         >
           {totalPages}
         </button>
@@ -214,7 +210,7 @@ function AdminTable({
             <tr>
               {columns.map((column) => (
                 <th
-                  key={column.key}
+                  key={String(column.key)}
                   className="px-6 py-3 text-left text-sm tracking-wider"
                 >
                   <div className="flex gap-1 items-center">
@@ -234,11 +230,11 @@ function AdminTable({
             {data.map((row) => (
               <tr key={row.id} className="hover:bg-gray-50 transition-colors">
                 {columns.map((column) => (
-                  <td key={column.key} className="px-6 py-4">
+                  <td key={String(column.key)} className="px-6 py-4">
                     {column.render ? (
                       column.render(row[column.key], row)
                     ) : column.key === "status" ? (
-                      getStatusBadge(row[column.key])
+                      getStatusBadge(String(row[column.key]))
                     ) : (
                       <div className="text-sm text-[#746F6A]">
                         {row[column.key]}

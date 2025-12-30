@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Edit2, Trash2 } from 'lucide-react';
 import PaymentMethodModal from './PaymentMethodModal';
+import { useAuth } from '../../context/AuthContext';
 
 
 const initialPayments = [
@@ -10,7 +11,7 @@ const initialPayments = [
         type: 'Mastercard',
         last4: '3456',
         expiry: '05/27',
-        holder: 'DAVIDE MURRO',
+        holder: 'DAVIDE MURRO', // Will be updated
         isDefault: true,
 
         color: 'bg-gradient-to-br from-gray-800 to-gray-900'
@@ -21,14 +22,22 @@ const initialPayments = [
         type: 'Mastercard',
         last4: '3456',
         expiry: '05/27',
-        holder: 'DAVIDE MURRO',
+        holder: 'DAVIDE MURRO', // Will be updated
         isDefault: false,
         color: 'bg-gradient-to-br from-gray-800 to-gray-900'
     }
 ];
 
 const ProfilePayments: React.FC = () => {
+    const { user } = useAuth();
     const [payments, setPayments] = useState(initialPayments);
+
+    useEffect(() => {
+        if (user) {
+            // eslint-disable-next-line 
+            setPayments(prev => prev.map(p => ({ ...p, holder: user.name.toUpperCase() })));
+        }
+    }, [user]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [modalMode, setModalMode] = useState<'add' | 'edit'>('add');
     const [editingId, setEditingId] = useState<number | null>(null);

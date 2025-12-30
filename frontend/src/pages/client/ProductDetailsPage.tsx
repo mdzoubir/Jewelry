@@ -1,27 +1,60 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { products } from '../../data/mockData';
+import client, { API_BASE_URL } from '../../api/client';
+import type { Product } from '../../types';
 import ProductGallery from '../../components/product-details/ProductGallery';
 import ProductInfo from '../../components/product-details/ProductInfo';
 import Reviews from '../../components/home/Reviews';
 import SuggestedProducts from '../../components/products/SuggestedProducts';
 import WishlistSection from '../../components/products/WishlistSection';
 
-
-
-
 const ProductDetailsPage: React.FC = () => {
     const { id } = useParams<{ id: string }>();
-    const product = products.find(p => p.id === Number(id)) || null;
+    const [product, setProduct] = useState<Product | null>(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-    if (!product) {
-        return <div className="min-h-screen pt-40 text-center">Prodotto non trovato loading...</div>;
+    useEffect(() => {
+        const fetchProduct = async () => {
+            if (!id) return;
+            try {
+                setLoading(true);
+                const res = await client.get(`/products/${id}`);
+                const fetchedProduct = res.data;
+
+                // Handle image URL
+                let imageUrl = 'https://images.unsplash.com/photo-1599643478518-17488fbbcd75?q=80&w=2574&auto=format&fit=crop';
+                const dbImage = fetchedProduct.img || fetchedProduct.image_url;
+
+                if (dbImage) {
+                    if (dbImage.startsWith('http')) {
+                        imageUrl = dbImage;
+                    } else {
+                        let path = dbImage;
+                        if (!path.startsWith('uploads/') && !path.startsWith('/uploads/')) {
+                            path = `uploads/${path}`;
+                        }
+                        imageUrl = `${API_BASE_URL}/${path.replace(/^\//, '')}`;
+                    }
+                }
+
+                setProduct({ ...fetchedProduct, img: imageUrl });
+            } catch (err) {
+                console.error("Failed to fetch product", err);
+                setError("Prodotto non trovato");
+            } finally {
+                setLoading(false);
+            }
+        };
+        fetchProduct();
+    }, [id]);
+
+    if (loading) return <div className="min-h-screen pt-40 text-center">Caricamento...</div>;
+    if (error || !product) {
+        return <div className="min-h-screen pt-40 text-center">Prodotto non trovato</div>;
     }
 
-
-    const images = product.images && product.images.length > 0
-        ? product.images
-        : [product.img || '', products[0]?.img || '', products[1]?.img || ''].filter(Boolean);
+    const images = [product.img || ''].filter(Boolean);
 
     return (
         <div className="pt-36 pb-24 min-h-screen bg-white relative overflow-hidden font-sans">

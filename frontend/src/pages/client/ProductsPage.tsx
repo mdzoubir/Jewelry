@@ -93,7 +93,7 @@ const ProductsPage: React.FC = () => {
     }, []);
 
     const filteredProducts = React.useMemo(() => {
-        console.log("Filtering with:", filters);
+
         return products.filter(product => {
             // 1. Category Filter (Top bar)
             if (selectedCategory && product.category !== selectedCategory) {

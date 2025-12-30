@@ -63,3 +63,18 @@ export interface User {
     role: 'customer' | 'admin';
     phone?: string;
 }
+
+export interface FilterState {
+    gender?: string | null;
+    type?: string | null;
+    ringSize?: [number, number];
+    carats?: [number, number];
+    price?: [number, number];
+    material?: string | null;
+    gemColor?: string | null;
+}
+
+export interface FilterProps {
+    filters: FilterState;
+    setFilters: React.Dispatch<React.SetStateAction<FilterState>>;
+}

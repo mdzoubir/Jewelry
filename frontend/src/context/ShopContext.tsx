@@ -20,6 +20,7 @@ interface ShopContextType {
     discountAmount: number;
     wishlist: number[];
     toggleWishlist: (productId: number) => void;
+    clearCart: () => void;
 }
 
 const ShopContext = createContext<ShopContextType | undefined>(undefined);
@@ -145,7 +146,12 @@ export const ShopProvider: React.FC<ShopProviderProps> = ({ children }) => {
 
         if (isAuthenticated && itemToRemove) {
             try {
-                await client.delete(`/cart/${itemToRemove.id}`);
+                // Ensure we use the database ID (itemToRemove.dbId) for backend removal
+                if (itemToRemove.dbId) {
+                    await client.delete(`/cart/${itemToRemove.dbId}`);
+                } else {
+                    console.error("No database ID found for item removal, skipping backend sync");
+                }
             } catch (error) {
                 console.error("Failed to remove from backend cart", error);
             }
@@ -165,7 +171,24 @@ export const ShopProvider: React.FC<ShopProviderProps> = ({ children }) => {
         ));
     };
 
-    const toggleWishlist = (productId: number) => {
+    useEffect(() => {
+        const syncWishlist = async () => {
+            if (isAuthenticated) {
+                try {
+                    const response = await client.get('/wishlist');
+                    // Store IDs for easy "isLiked" check
+                    const serverWishlistIds = response.data.map((item: { product_id: number }) => item.product_id);
+                    setWishlist(serverWishlistIds);
+                } catch (error) {
+                    console.error("Failed to sync wishlist", error);
+                }
+            }
+        };
+        syncWishlist();
+    }, [isAuthenticated]);
+
+    const toggleWishlist = async (productId: number) => {
+        // Optimistic update
         setWishlist(prev => {
             if (prev.includes(productId)) {
                 return prev.filter(id => id !== productId);
@@ -173,6 +196,15 @@ export const ShopProvider: React.FC<ShopProviderProps> = ({ children }) => {
                 return [...prev, productId];
             }
         });
+
+        if (isAuthenticated) {
+            try {
+                await client.post('/wishlist/toggle', { productId });
+            } catch (error) {
+                console.error("Failed to toggle wishlist on backend", error);
+                // Revert on error? For now, keep it simple.
+            }
+        }
     };
 
     const applyDiscount = (code: string) => {
@@ -195,6 +227,19 @@ export const ShopProvider: React.FC<ShopProviderProps> = ({ children }) => {
         ? (subtotal + shippingCost + taxAmount + otherTax) - discountAmount
         : 0;
 
+    const clearCart = async () => {
+        setCartItems([]);
+        localStorage.removeItem('mya_shop_cart');
+
+        if (isAuthenticated) {
+            try {
+                await client.delete('/cart');
+            } catch (error) {
+                console.error("Failed to clear backend cart", error);
+            }
+        }
+    };
+
     return (
         <ShopContext.Provider value={{
             cartItems,
@@ -202,6 +247,7 @@ export const ShopProvider: React.FC<ShopProviderProps> = ({ children }) => {
             removeFromCart,
             updateQuantity,
             toggleItemSelection,
+            clearCart,
             shippingCost,
             taxRate,
             subtotal,

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Phone, MapPin } from 'lucide-react';
 import Button from '../ui/Button';
+import client from '../../api/client';
 
 const ProfileContact: React.FC = () => {
     const [formData, setFormData] = useState({
@@ -21,11 +22,23 @@ const ProfileContact: React.FC = () => {
         }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        // Handle Contact Submit logic
-        // Handle Contact Submit logic
-        // TODO: Connect to backend API
+        try {
+            await client.post('/contact', formData);
+            alert("Messaggio inviato con successo!");
+            setFormData({
+                nome: '',
+                cognome: '',
+                email: '',
+                telefono: '',
+                messaggio: '',
+                privacy: false
+            });
+        } catch (error) {
+            console.error(error);
+            alert("Errore durante l'invio del messaggio.");
+        }
     };
 
     return (

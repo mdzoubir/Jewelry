@@ -1,10 +1,10 @@
-import { Router } from 'express';
-import * as orderController from '../controllers/orderController';
-import { authenticateToken } from '../middleware/authMiddleware';
+import express from 'express';
+import { createOrder, getMyOrders } from '../controllers/orderController';
+import { authenticateToken as protect } from '../middleware/authMiddleware';
 
-const router = Router();
+const router = express.Router();
 
-router.post('/', authenticateToken, orderController.createOrder);
-router.get('/my-orders', authenticateToken, orderController.getMyOrders);
+router.post('/', protect, createOrder);
+router.get('/', protect, getMyOrders);
 
 export default router;

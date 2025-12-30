@@ -2,15 +2,26 @@ import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 import Button from '../ui/Button';
 
+interface AddressData {
+    name?: string;
+    phone?: string;
+    city?: string;
+    zip?: string;
+    province?: string;
+    street?: string;
+    instructions?: boolean;
+}
+
 interface AddressModalProps {
     isOpen: boolean;
     onClose: () => void;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    initialData?: any;
+    initialData?: AddressData;
     mode?: 'add' | 'edit';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onSave?: (data: any) => Promise<void>;
 }
 
-const AddressModal: React.FC<AddressModalProps> = ({ isOpen, onClose, initialData, mode = 'add' }) => {
+const AddressModal: React.FC<AddressModalProps> = ({ isOpen, onClose, initialData, mode = 'add', onSave }) => {
     const [formData, setFormData] = useState({
         nome: '',
         cognome: '',
@@ -27,8 +38,21 @@ const AddressModal: React.FC<AddressModalProps> = ({ isOpen, onClose, initialDat
 
     useEffect(() => {
         if (initialData) {
-            // eslint-disable-next-line
-            setFormData(initialData);
+            // Map backend data to form if editing
+            // eslint-disable-next-line 
+            setFormData({
+                nome: initialData.name?.split(' ')[0] || '',
+                cognome: initialData.name?.split(' ').slice(1).join(' ') || '',
+                email: '', // Not stored in address usually?
+                telefono: initialData.phone || '',
+                citta: initialData.city || '',
+                cap: initialData.zip || '',
+                provincia: initialData.province || '',
+                indirizzo: initialData.street?.split(', n.')[0] || initialData.street || '',
+                civico: initialData.street?.split(', n.')[1] || '',
+                istruzioni: initialData.instructions ? 'Si' : '', // simplified
+                privacy: true
+            });
         } else {
             // Reset form on add
             setFormData({
@@ -56,6 +80,25 @@ const AddressModal: React.FC<AddressModalProps> = ({ isOpen, onClose, initialDat
         }));
     };
 
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (onSave) {
+            // Map form data to backend format
+            const backendData = {
+                title: `${formData.nome} ${formData.cognome} - ${formData.citta}`, // Auto-generate title
+                name: `${formData.nome} ${formData.cognome}`,
+                phone: formData.telefono,
+                street: `${formData.indirizzo}${formData.civico ? `, n.${formData.civico}` : ''}`,
+                city: formData.citta,
+                zip: formData.cap,
+                province: formData.provincia,
+                country: 'Italia',
+                is_default: false // Managed outside or default false
+            };
+            await onSave(backendData);
+        }
+    };
+
     if (!isOpen) return null;
 
     return (
@@ -70,10 +113,10 @@ const AddressModal: React.FC<AddressModalProps> = ({ isOpen, onClose, initialDat
                 </button>
 
                 <h2 className="text-2xl font-serif text-[#6D635B] mb-8 font-bold">
-                    {mode === 'edit' ? 'Indirizzo di spedizione 1' : 'Nuovo indirizzo di spedizione'}
+                    {mode === 'edit' ? 'Modifica indirizzo' : 'Nuovo indirizzo di spedizione'}
                 </h2>
 
-                <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); onClose(); }}>
+                <form className="space-y-4" onSubmit={handleSubmit}>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {/* Name */}
                         <div>
@@ -83,6 +126,7 @@ const AddressModal: React.FC<AddressModalProps> = ({ isOpen, onClose, initialDat
                                 value={formData.nome}
                                 onChange={handleChange}
                                 placeholder="Nome"
+                                required
                                 className="w-full px-4 py-3 rounded border border-[#C5A572] bg-transparent text-gray-700 placeholder:text-[#C5C5C5] focus:outline-none focus:ring-1 focus:ring-[#C5A572]"
                             />
                         </div>
@@ -94,6 +138,7 @@ const AddressModal: React.FC<AddressModalProps> = ({ isOpen, onClose, initialDat
                                 value={formData.cognome}
                                 onChange={handleChange}
                                 placeholder="Cognome"
+                                required
                                 className="w-full px-4 py-3 rounded border border-[#C5A572] bg-transparent text-gray-700 placeholder:text-[#C5C5C5] focus:outline-none focus:ring-1 focus:ring-[#C5A572]"
                             />
                         </div>
@@ -119,6 +164,7 @@ const AddressModal: React.FC<AddressModalProps> = ({ isOpen, onClose, initialDat
                                 value={formData.telefono}
                                 onChange={handleChange}
                                 placeholder="N. telefono"
+                                required
                                 className="w-full px-4 py-3 rounded border border-[#C5A572] bg-transparent text-gray-700 placeholder:text-[#C5C5C5] focus:outline-none focus:ring-1 focus:ring-[#C5A572]"
                             />
                         </div>
@@ -132,6 +178,7 @@ const AddressModal: React.FC<AddressModalProps> = ({ isOpen, onClose, initialDat
                             value={formData.citta}
                             onChange={handleChange}
                             placeholder="Città di residenza"
+                            required
                             className="w-full px-4 py-3 rounded border border-[#C5A572] bg-transparent text-gray-700 placeholder:text-[#C5C5C5] focus:outline-none focus:ring-1 focus:ring-[#C5A572]"
                         />
                     </div>
@@ -145,6 +192,7 @@ const AddressModal: React.FC<AddressModalProps> = ({ isOpen, onClose, initialDat
                                 value={formData.cap}
                                 onChange={handleChange}
                                 placeholder="C.A.P."
+                                required
                                 className="w-full px-4 py-3 rounded border border-[#C5A572] bg-transparent text-gray-700 placeholder:text-[#C5C5C5] focus:outline-none focus:ring-1 focus:ring-[#C5A572]"
                             />
                         </div>
@@ -156,6 +204,7 @@ const AddressModal: React.FC<AddressModalProps> = ({ isOpen, onClose, initialDat
                                 value={formData.provincia}
                                 onChange={handleChange}
                                 placeholder="Provincia"
+                                required
                                 className="w-full px-4 py-3 rounded border border-[#C5A572] bg-transparent text-gray-700 placeholder:text-[#C5C5C5] focus:outline-none focus:ring-1 focus:ring-[#C5A572]"
                             />
                         </div>
@@ -170,6 +219,7 @@ const AddressModal: React.FC<AddressModalProps> = ({ isOpen, onClose, initialDat
                                 value={formData.indirizzo}
                                 onChange={handleChange}
                                 placeholder="Indirizzo di consegna"
+                                required
                                 className="w-full px-4 py-3 rounded border border-[#C5A572] bg-transparent text-gray-700 placeholder:text-[#C5C5C5] focus:outline-none focus:ring-1 focus:ring-[#C5A572]"
                             />
                         </div>

@@ -36,3 +36,17 @@ export const createUser = async (user: Omit<User, 'id' | 'created_at'>): Promise
     );
     return result.insertId;
 };
+
+export const updateUser = async (id: number, userData: Partial<User>): Promise<void> => {
+    const fields = Object.keys(userData).filter(key => key !== 'id' && key !== 'created_at' && key !== 'email' && key !== 'role'); // Protect email/role/id from direct update here if needed
+    if (fields.length === 0) return;
+
+    const setClause = fields.map(field => `${field} = ?`).join(', ');
+    const values = fields.map(field => (userData as any)[field]);
+
+    await pool.query(`UPDATE users SET ${setClause} WHERE id = ?`, [...values, id]);
+};
+
+export const deleteUser = async (id: number): Promise<void> => {
+    await pool.query('DELETE FROM users WHERE id = ?', [id]);
+};
