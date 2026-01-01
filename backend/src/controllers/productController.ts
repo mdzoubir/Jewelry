@@ -45,7 +45,8 @@ export const createProduct = async (req: Request, res: Response, next: NextFunct
             slug: validatedData.slug,
             description: validatedData.description ?? null,
             price: validatedData.price,
-            image_url: validatedData.image_url ?? null
+            image_url: validatedData.image_url ?? null,
+            stock_quantity: validatedData.stock_quantity
         });
 
         const newProduct = await productModel.getProductById(newProductId);

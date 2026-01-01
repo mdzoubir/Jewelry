@@ -22,12 +22,20 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     useEffect(() => {
         const initAuth = async () => {
             const storedToken = localStorage.getItem('token');
-            const storedUser = localStorage.getItem('user');
+            // const storedUser = localStorage.getItem('user'); // Don't trust stored user
 
-            if (storedToken && storedUser) {
-                setToken(storedToken);
-                setUser(JSON.parse(storedUser));
-                // Optional: Validate token with backend here
+            if (storedToken) {
+                try {
+                    // Import dynamically or assume it's available (better to import at top)
+                    const { getCurrentUser } = await import('../api/client');
+                    const userData = await getCurrentUser(storedToken);
+
+                    setToken(storedToken);
+                    setUser(userData);
+                } catch (error) {
+                    console.error("Token verification failed", error);
+                    logout(); // Token is invalid/expired
+                }
             }
             setIsLoading(false);
         };

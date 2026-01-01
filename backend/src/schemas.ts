@@ -39,6 +39,7 @@ export const productSchema = z.object({
     description: z.string().optional(),
     price: z.number().positive(),
     image_url: z.string().url().optional().or(z.literal('')),
+    stock_quantity: z.number().int().nonnegative().default(0),
     is_sold_out: z.boolean().optional(),
     is_best_seller: z.boolean().optional()
 });

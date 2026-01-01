@@ -70,6 +70,23 @@ export const updateProfile = async (req: Request, res: Response, next: NextFunct
     }
 };
 
+export const getMe = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const userId = req.user!.id;
+        const user = await userModel.getUserById(userId);
+
+        if (!user) {
+            return res.status(404).json({ message: 'User not found' });
+        }
+
+        // Exclude password hash
+        const { password_hash, ...userWithoutPassword } = user;
+        res.json(userWithoutPassword);
+    } catch (err) {
+        next(err);
+    }
+};
+
 export const deleteAccount = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const userId = req.user!.id;

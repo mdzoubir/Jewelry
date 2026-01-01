@@ -23,4 +23,12 @@ client.interceptors.request.use(
     }
 );
 
+// Helper to verify token and get user
+export const getCurrentUser = async (token: string) => {
+    const response = await client.get('/users/me', {
+        headers: { Authorization: `Bearer ${token}` }
+    });
+    return response.data;
+};
+
 export default client;

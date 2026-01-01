@@ -9,6 +9,7 @@ export interface Product {
     description: string | null;
     price: number;
     image_url: string | null;
+    stock_quantity: number;
     is_sold_out?: number | boolean;
     is_best_seller?: number | boolean;
     created_at: Date;

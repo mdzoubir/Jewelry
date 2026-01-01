@@ -47,11 +47,11 @@ function RecentOrders() {
   ];
 
   const handleEdit = (id: number) => {
-    console.log("Edit order:", id);
+
   };
 
   const handleView = (id: number) => {
-    console.log("View order:", id);
+
   };
 
   const ordersWithIds = recentOrders.map((order, index) => ({

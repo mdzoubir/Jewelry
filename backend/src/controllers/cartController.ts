@@ -14,7 +14,25 @@ export const getCart = async (req: Request, res: Response, next: NextFunction) =
 export const addToCart = async (req: Request, res: Response, next: NextFunction) => {
     try {
         const userId = (req as any).user.id;
-        const { product_id, quantity, options } = req.body; // Expanded to accept options
+        const { product_id, quantity, options } = req.body;
+
+        const product = await import('../models/productModel').then(m => m.getProductById(product_id));
+
+        if (!product) {
+            res.status(404).json({ message: 'Product not found' });
+            return;
+        }
+
+        if (product.is_sold_out) {
+            res.status(400).json({ message: 'Cannot add sold out item to cart' });
+            return;
+        }
+
+        if (product.stock_quantity < (quantity || 1)) {
+            res.status(400).json({ message: 'Insufficient stock' });
+            return;
+        }
+
         await cartModel.addToCart(userId, product_id, quantity || 1, options);
         res.status(200).json({ message: 'Item added to cart' });
     } catch (err) {

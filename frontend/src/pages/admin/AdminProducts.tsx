@@ -137,27 +137,27 @@ function AdminProducts() {
   ];
 
   const handleEdit = (id: number) => {
-    console.log("Edit product:", id);
+
   };
 
   const handleDelete = (id: number) => {
-    console.log("Delete product:", id);
+
   };
 
   const handleView = (id: number) => {
-    console.log("View product:", id);
+
   };
 
   const handlePageChange = (page: number) => {
-    console.log("Change to page:", page);
+
   };
 
   const handleExport = () => {
-    console.log("Export products");
+
   };
 
   const handleAdd = () => {
-    console.log("Add new product");
+
   };
 
   return (

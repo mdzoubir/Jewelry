@@ -13,9 +13,9 @@ const BestSellers: React.FC = () => {
             try {
                 const res = await client.get('/products');
                 const allProducts = res.data;
-                const bestSellers = allProducts.filter((p: any) => p.is_best_seller).slice(0, 4);
+                const bestSellers = allProducts.filter((p: any) => p.is_best_seller).slice(0, 10);
 
-                const displayProducts = bestSellers.length > 0 ? bestSellers : allProducts.slice(0, 4);
+                const displayProducts = bestSellers.length > 0 ? bestSellers : allProducts.slice(0, 10);
 
                 const mappedProducts = displayProducts.map((p: any) => {
                     let imageUrl = 'https://images.unsplash.com/photo-1599643478518-17488fbbcd75?q=80&w=2574&auto=format&fit=crop';
@@ -32,7 +32,11 @@ const BestSellers: React.FC = () => {
                             imageUrl = `${API_BASE_URL}/${path.replace(/^\//, '')}`;
                         }
                     }
-                    return { ...p, img: imageUrl };
+                    return {
+                        ...p,
+                        img: imageUrl,
+                        isBestSeller: Boolean(p.is_best_seller)
+                    };
                 });
 
                 setProducts(mappedProducts);
@@ -61,13 +65,14 @@ const BestSellers: React.FC = () => {
 
                 <div className="flex overflow-x-auto space-x-4 md:space-x-6 pb-4 scrollbar-hide snap-x snap-mandatory">
                     {products.map((p) => (
-                        <div key={p.id} className="min-w-[160px] md:min-w-[250px] flex-shrink-0 snap-start">
+                        <div key={p.id} className="min-w-[280px] md:min-w-[320px] flex-shrink-0 snap-start">
                             <ProductCard
                                 id={p.id}
                                 image={p.img || ''}
                                 name={p.name}
                                 price={Number(p.price)}
                                 isBestSeller={Boolean(p.isBestSeller)}
+                                imgFit="cover"
                             />
                         </div>
                     ))}

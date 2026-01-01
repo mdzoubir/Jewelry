@@ -142,27 +142,27 @@ function AdminOrders() {
   ];
 
   const handleEdit = (id: number) => {
-    console.log("Edit order:", id);
+
   };
 
   const handleDelete = (id: number) => {
-    console.log("Delete order:", id);
+
   };
 
   const handleView = (id: number) => {
-    console.log("View order:", id);
+
   };
 
   const handlePageChange = (page: number) => {
-    console.log("Change to page:", page);
+
   };
 
   const handleExport = () => {
-    console.log("Export orders");
+
   };
 
   const handleAdd = () => {
-    console.log("Add new order");
+
   };
 
   return (
