@@ -85,7 +85,7 @@ frontend/
 
 ## Notes
 
-- In this public repository the **payment step is simulated**: no payment provider is connected, and the checkout confirms or fails the payment locally.
+- The production site at [myaoro.com](https://myaoro.com) processes real payments with **Stripe and PayPal**. In this public repository the payment step is **simulated** (no provider keys or payment integration code are included), so the checkout confirms or fails the payment locally.
 - Planned improvements: store money as integer cents, move cart clearing into the order transaction, and set the order status from the payment result.
 
 ## Author
